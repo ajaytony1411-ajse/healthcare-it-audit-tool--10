@@ -1,0 +1,1070 @@
+<style>
+:root{
+  --bg:#04080f; --panel:rgba(10,26,42,.62); --panel-2:rgba(8,20,34,.9);
+  --fg:#cfe9f7; --bright:#eaf7ff; --muted:#6f93ab;
+  --cy:#3fd0f5; --cy-dim:rgba(63,208,245,.28); --cy-faint:rgba(63,208,245,.09);
+  --ok:#3ce6a8; --part:#f7b23b; --fail:#ff5f56; --crit:#ff2d55;
+  --mono:ui-monospace,"Cascadia Mono","Consolas","SF Mono",monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;color:var(--fg);background:var(--bg);
+font:14px/1.6 "Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+background-image:
+  radial-gradient(900px 500px at 15% -8%,rgba(63,208,245,.13),transparent 62%),
+  radial-gradient(700px 460px at 92% 4%,rgba(63,208,245,.07),transparent 60%),
+  linear-gradient(rgba(63,208,245,.032) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(63,208,245,.032) 1px,transparent 1px);
+background-size:auto,auto,44px 44px,44px 44px;background-attachment:fixed}
+
+.page{max-width:1120px;margin:0 auto;padding:40px 46px 56px;position:relative;
+background:linear-gradient(180deg,rgba(8,22,38,.72),rgba(4,10,18,.72));
+border-left:1px solid var(--cy-dim);border-right:1px solid var(--cy-dim)}
+
+h1{font-size:26px;line-height:1.24;margin:0 0 6px;color:var(--bright);font-weight:600;
+letter-spacing:.005em;text-shadow:0 0 26px rgba(63,208,245,.4)}
+h2{font-size:13px;margin:44px 0 14px;padding:0 0 8px;color:var(--cy);font-weight:700;
+text-transform:uppercase;letter-spacing:.16em;font-family:var(--mono);
+border-bottom:1px solid var(--cy-dim);position:relative}
+h2::after{content:"";position:absolute;left:0;bottom:-1px;width:64px;height:1px;
+background:var(--cy);box-shadow:0 0 10px var(--cy)}
+h3{font-size:12px;margin:26px 0 10px;color:var(--bright);font-family:var(--mono);
+text-transform:uppercase;letter-spacing:.13em}
+p{margin:0 0 12px}
+ul,ol{margin:0 0 12px;padding-left:20px}
+li{margin:4px 0}
+.sub{color:var(--muted);font-size:12.5px}
+
+/* --- masthead ------------------------------------------------------ */
+.masthead{position:relative;padding:20px 0 20px 20px;margin-bottom:6px;
+border-bottom:1px solid var(--cy-dim);border-left:2px solid var(--cy)}
+.masthead::before{content:"";position:absolute;left:-2px;top:0;width:16px;height:1px;
+background:var(--cy);box-shadow:0 0 8px var(--cy)}
+.tag{display:inline-block;color:var(--cy);background:var(--cy-faint);
+border:1px solid var(--cy-dim);font-family:var(--mono);font-size:10px;letter-spacing:.22em;
+text-transform:uppercase;padding:4px 12px;margin-bottom:12px}
+
+/* --- key/value grid ------------------------------------------------ */
+.meta{display:grid;grid-template-columns:repeat(2,1fr);gap:0 34px;margin:20px 0 4px}
+.meta div{display:flex;justify-content:space-between;gap:16px;padding:7px 0;
+border-bottom:1px solid rgba(63,208,245,.13)}
+.meta span:first-child{color:var(--muted);font-family:var(--mono);font-size:11px;
+text-transform:uppercase;letter-spacing:.1em;white-space:nowrap}
+.meta span:last-child{color:var(--bright);font-weight:600;text-align:right}
+
+/* --- stat panels --------------------------------------------------- */
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:22px 0}
+.card{position:relative;background:var(--panel);border:1px solid var(--cy-dim);
+padding:16px 16px 14px;overflow:hidden}
+.card::before,.card::after{content:"";position:absolute;width:11px;height:11px;
+border:1px solid var(--cy);opacity:.85}
+.card::before{top:5px;left:5px;border-right:0;border-bottom:0}
+.card::after{bottom:5px;right:5px;border-left:0;border-top:0}
+.card .l{font-family:var(--mono);font-size:10px;text-transform:uppercase;
+letter-spacing:.16em;color:var(--muted);margin-bottom:6px}
+.card .v{font-family:var(--mono);font-size:30px;font-weight:700;line-height:1.1;
+color:var(--cy);text-shadow:0 0 22px rgba(63,208,245,.5);margin-bottom:6px}
+
+.opinion{position:relative;background:var(--panel-2);border:1px solid var(--cy-dim);
+border-left:3px solid var(--cy);padding:16px 20px;margin:18px 0}
+.opinion b{color:var(--cy);font-family:var(--mono);text-transform:uppercase;
+letter-spacing:.1em;font-size:11.5px}
+
+/* --- tables -------------------------------------------------------- */
+.tw{overflow-x:auto;margin:12px 0 4px;border:1px solid var(--cy-dim);background:var(--panel)}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:620px}
+th,td{padding:9px 12px;text-align:left;vertical-align:top;
+border-bottom:1px solid rgba(63,208,245,.11)}
+th{background:rgba(63,208,245,.07);color:var(--cy);font-family:var(--mono);font-weight:600;
+font-size:10.5px;text-transform:uppercase;letter-spacing:.13em;
+border-bottom:1px solid var(--cy-dim);white-space:nowrap}
+tbody tr:hover{background:rgba(63,208,245,.045)}
+tbody tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;white-space:nowrap;font-family:var(--mono)}
+
+/* --- meters -------------------------------------------------------- */
+.bar{position:relative;height:6px;background:rgba(63,208,245,.12);min-width:110px;
+overflow:hidden;margin-bottom:5px}
+.bar i{display:block;height:100%;background:var(--ok);box-shadow:0 0 12px var(--ok)}
+.bar.warn i{background:var(--part);box-shadow:0 0 12px var(--part)}
+.bar.bad i{background:var(--fail);box-shadow:0 0 12px var(--fail)}
+.bar+.sub{font-family:var(--mono);font-size:11.5px;color:var(--bright)}
+
+/* --- state chips --------------------------------------------------- */
+.pill{display:inline-block;padding:3px 10px;font-family:var(--mono);font-size:10px;
+font-weight:700;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;
+border:1px solid currentColor}
+.r-sub{color:var(--ok);background:rgba(60,230,168,.1)}
+.r-rea{color:var(--cy);background:var(--cy-faint)}
+.r-lim{color:var(--part);background:rgba(247,178,59,.1)}
+.r-non{color:var(--fail);background:rgba(255,95,86,.1)}
+.r-na{color:var(--muted);background:rgba(111,147,171,.1)}
+.s-ok{color:var(--ok);font-weight:600} .s-part{color:var(--part);font-weight:600}
+.s-fail{color:var(--fail);font-weight:700} .s-na,.s-untested{color:var(--muted)}
+.sev{display:inline-block;padding:3px 8px;font-family:var(--mono);font-size:9.5px;
+font-weight:700;text-transform:uppercase;letter-spacing:.13em;border:1px solid currentColor}
+.sev-critical{color:var(--crit);background:rgba(255,45,85,.14)}
+.sev-high{color:var(--fail);background:rgba(255,95,86,.12)}
+.sev-medium{color:var(--part);background:rgba(247,178,59,.12)}
+.sev-low{color:var(--muted);background:rgba(111,147,171,.12)}
+
+/* --- finding modules ----------------------------------------------- */
+.finding{position:relative;margin:20px 0;background:var(--panel);
+border:1px solid var(--cy-dim);border-left:3px solid var(--fail)}
+.finding.partial{border-left-color:var(--part)}
+.finding .hd{display:flex;justify-content:space-between;align-items:center;gap:14px;
+padding:12px 16px;background:rgba(63,208,245,.06);
+border-bottom:1px solid var(--cy-dim)}
+.finding .hd b{font-size:13.5px;color:var(--bright);letter-spacing:.01em}
+.finding .bd{padding:6px 16px 14px}
+.finding dl{margin:0;display:grid;grid-template-columns:158px 1fr;gap:0}
+.finding dt{color:var(--cy);font-family:var(--mono);font-size:10px;text-transform:uppercase;
+letter-spacing:.13em;padding:11px 14px 11px 0;
+border-bottom:1px solid rgba(63,208,245,.09)}
+.finding dd{margin:0;padding:11px 0;border-bottom:1px solid rgba(63,208,245,.09)}
+.finding dl>:nth-last-child(-n+2){border-bottom:0}
+
+.map{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.04em}
+.map code{color:var(--cy);background:var(--cy-faint);border:1px solid rgba(63,208,245,.16);
+padding:1px 6px;font-size:10.5px}
+.overdue{color:var(--crit);font-weight:700;font-family:var(--mono)}
+
+.foot{margin-top:48px;padding-top:16px;border-top:1px solid var(--cy-dim);
+font-size:11.5px;color:var(--muted);line-height:1.7}
+
+@media (max-width:960px){.page{padding:24px 18px 40px;border:0}
+.cards{grid-template-columns:repeat(2,1fr)}.meta{grid-template-columns:1fr}
+.finding dl{grid-template-columns:1fr}
+.finding dt{padding-bottom:0;border:0}
+.finding .hd{flex-direction:column;align-items:flex-start;gap:6px}}
+
+/* Printed copies flatten to ink-friendly light. */
+@media print{
+  body{background:#fff;background-image:none;color:#16202b}
+  .page{max-width:none;padding:0;border:0;background:none}
+  h1,.card .v,.finding .hd b{color:#16202b;text-shadow:none}
+  h2,h3,.finding dt,.map code,.opinion b{color:#1f3a5f}
+  .card,.opinion,.finding,.tw,th{background:#f6f8fa}
+  .card::before,.card::after{display:none}
+  th,td,.tw,.card,.finding,.opinion,h2{border-color:#c9d3de}
+  .bar i{box-shadow:none}
+  .tw{overflow:visible}table{min-width:0}
+  h2{page-break-after:avoid}.finding{page-break-inside:avoid}
+}
+</style><div class='page'>
+
+<div class="masthead">
+  <div class="tag">Internal Audit Report &middot; Confidential</div>
+  <h1>IT &amp; Information Security Audit &mdash; Northgate Health Group</h1>
+  <div class="sub">Healthcare IT &amp; Information Security Audit Programme v1.0 &middot;
+  Reference ITA-202607-C302</div>
+</div>
+<div class="meta">
+  <div><span>Auditee / site</span><span>Head office, 3 clinical sites and hosted data centre</span></div>
+  <div><span>Report date</span><span>2026-07-27</span></div>
+  <div><span>Lead auditor</span><span>A. Tony, Lead IT Auditor</span></div>
+  <div><span>Audit period</span><span>2025-07-01 to 2026-07-27</span></div>
+  <div><span>Controls in programme</span><span>58</span></div>
+  <div><span>Controls tested</span><span>57</span></div>
+</div>
+<h2>1. Executive Summary</h2>
+
+<div class="cards">
+  <div class="card"><div class="l">Compliance score</div>
+    <div class="v">78.6%</div>
+    <span class="pill r-lim">Limited assurance</span></div>
+  <div class="card"><div class="l">Findings raised</div>
+    <div class="v">18</div>
+    <span class="sub">6 failed, 12 partial</span></div>
+  <div class="card"><div class="l">Critical / high</div>
+    <div class="v">6 / 5</div>
+    <span class="sub">by finding severity</span></div>
+  <div class="card"><div class="l">Risk exposure</div>
+    <div class="v">109.0</div>
+    <span class="sub">weighted score</span></div>
+</div>
+<div class="opinion"><b>Audit opinion.</b> Limited assurance at best. 6 finding(s) were rated critical; these expose patient data or clinical service continuity to material risk and require remediation ahead of the wider action plan.</div>
+<h3>Key matters for management attention</h3><ol>
+<li><b>BCP-02 &ndash; Restore testing performed and evidenced.</b> No full restore test of the EHR has been performed since the platform migration 19 months ago. Testing is limited to individual file-level restores. The documented RTO of 4 hours has therefore never been validated.</li>
+<li><b>CHG-03 &ndash; Use of live patient data in non-production.</b> The UAT instance of the EHR contains a full copy of live patient data refreshed monthly, including names, NHS numbers and clinical notes. 34 users have access to UAT, of whom 9 have no clinical role. No masking process exists and no approval for the use of live data was found.</li>
+<li><b>IAM-01 &ndash; Joiners, movers, leavers process effectiveness.</b> 20 leavers were sampled against HR termination records. 7 accounts (35%) remained enabled after the leave date, the longest for 94 days. Two of these accounts were used to authenticate to the EHR after the individual had left the organisation.</li>
+<li><b>LOG-02 &ndash; Clinical record access auditing.</b> The EHR records record-level access, but no proactive audit of inappropriate access has been performed in the audit period. No alerting exists for self-lookup, same-surname or VIP record access. A sample query run during fieldwork identified 3 instances of staff accessing their own record.</li>
+<li><b>VUL-02 &ndash; Patch deployment within defined SLA.</b> Of 20 critical and high vulnerabilities sampled, 13 exceeded the 14-day remediation SLA. Mean time to remediate for critical vulnerabilities was 47 days. Three internet-facing systems carried unpatched vulnerabilities with known public exploits at the time of testing.</li>
+</ol>
+<h2>2. Scope, Objective &amp; Methodology</h2>
+<p>Audit of information technology general controls (ITGC) and information security controls supporting the delivery and administration of clinical care, including systems processing special category health data.</p>
+<p>Fieldwork covered central IT infrastructure, the electronic health record, PACS, the practice management system and supporting cloud services. Clinical practice, medical device efficacy and financial controls were outside scope. Forensic readiness testing (IRM-04) was deferred at management request and will be covered in the next cycle; this constitutes a scope limitation.</p>
+<p>Testing was performed through a combination of enquiry of responsible officers, observation of processes in operation, inspection of system configuration and documentary evidence, and re-performance of selected control activities on a sample basis. Controls were assessed against the following frameworks:</p><ul>
+<li>ISO/IEC 27001:2022 Annex A</li>
+<li>NHS Data Security and Protection Toolkit (DSPT)</li>
+<li>Cyber Essentials / Cyber Essentials Plus</li>
+<li>UK GDPR &amp; Data Protection Act 2018</li>
+<li>NIS Regulations 2018 (where applicable)</li>
+<li>HIPAA Security Rule 45 CFR 164 (cross-reference for US-linked entities)</li>
+</ul>
+<p>Each control is rated <b>Compliant</b> (designed and operating effectively), <b>Partially compliant</b> (control exists but with gaps in design or operation), <b>Non-compliant</b> (control absent or ineffective), or <b>Not applicable</b>. The compliance score is calculated as (compliant + 0.5 &times; partial) &divide; controls assessed.</p>
+<p>Each finding is rated at the severity of the underlying control where the control was absent or ineffective, and one level below it where the control exists but operates with gaps, unless the auditor has judged otherwise. Remediation deadlines follow the finding severity: critical 7 days, high 30 days, medium 60 days, low 90 days.</p>
+<h2>3. Results by Control Domain</h2>
+<div class='tw'><table><thead><tr><th>Ref</th><th>Control domain</th><th class='num'>Tested</th><th class='num'>Pass</th><th class='num'>Partial</th><th class='num'>Fail</th><th>Score</th><th>Assurance</th></tr></thead><tbody>
+<tr><td><b>ISG</b></td><td>Information Security Governance &amp; Policy</td>
+<td class="num">4/4</td>
+<td class="num s-ok">3</td>
+<td class="num s-part">1</td>
+<td class="num s-fail">0</td>
+<td><div class="bar "><i style="width:87.5%"></i></div><span class="sub">87.5%</span></td>
+<td><span class="pill r-rea">Reasonable</span></td></tr>
+<tr><td><b>RSK</b></td><td>Risk Management &amp; Compliance Assurance</td>
+<td class="num">3/4</td>
+<td class="num s-ok">2</td>
+<td class="num s-part">1</td>
+<td class="num s-fail">0</td>
+<td><div class="bar "><i style="width:83.3%"></i></div><span class="sub">83.3%</span></td>
+<td><span class="pill r-rea">Reasonable</span></td></tr>
+<tr><td><b>IAM</b></td><td>Identity &amp; Access Management</td>
+<td class="num">5/5</td>
+<td class="num s-ok">3</td>
+<td class="num s-part">1</td>
+<td class="num s-fail">1</td>
+<td><div class="bar warn"><i style="width:70.0%"></i></div><span class="sub">70.0%</span></td>
+<td><span class="pill r-lim">Limited</span></td></tr>
+<tr><td><b>DPR</b></td><td>Data Protection &amp; Privacy</td>
+<td class="num">4/4</td>
+<td class="num s-ok">3</td>
+<td class="num s-part">1</td>
+<td class="num s-fail">0</td>
+<td><div class="bar "><i style="width:87.5%"></i></div><span class="sub">87.5%</span></td>
+<td><span class="pill r-rea">Reasonable</span></td></tr>
+<tr><td><b>NET</b></td><td>Network &amp; Infrastructure Security</td>
+<td class="num">4/4</td>
+<td class="num s-ok">3</td>
+<td class="num s-part">1</td>
+<td class="num s-fail">0</td>
+<td><div class="bar "><i style="width:87.5%"></i></div><span class="sub">87.5%</span></td>
+<td><span class="pill r-rea">Reasonable</span></td></tr>
+<tr><td><b>END</b></td><td>Endpoint, Mobile &amp; Connected Medical Device Security</td>
+<td class="num">5/5</td>
+<td class="num s-ok">4</td>
+<td class="num s-part">1</td>
+<td class="num s-fail">0</td>
+<td><div class="bar "><i style="width:90.0%"></i></div><span class="sub">90.0%</span></td>
+<td><span class="pill r-rea">Reasonable</span></td></tr>
+<tr><td><b>VUL</b></td><td>Vulnerability &amp; Patch Management</td>
+<td class="num">4/4</td>
+<td class="num s-ok">2</td>
+<td class="num s-part">0</td>
+<td class="num s-fail">2</td>
+<td><div class="bar bad"><i style="width:50.0%"></i></div><span class="sub">50.0%</span></td>
+<td><span class="pill r-non">No assurance</span></td></tr>
+<tr><td><b>CHG</b></td><td>Change &amp; Development Management</td>
+<td class="num">4/4</td>
+<td class="num s-ok">3</td>
+<td class="num s-part">0</td>
+<td class="num s-fail">1</td>
+<td><div class="bar warn"><i style="width:75.0%"></i></div><span class="sub">75.0%</span></td>
+<td><span class="pill r-lim">Limited</span></td></tr>
+<tr><td><b>LOG</b></td><td>Logging, Monitoring &amp; Detection</td>
+<td class="num">4/4</td>
+<td class="num s-ok">2</td>
+<td class="num s-part">1</td>
+<td class="num s-fail">1</td>
+<td><div class="bar warn"><i style="width:62.5%"></i></div><span class="sub">62.5%</span></td>
+<td><span class="pill r-lim">Limited</span></td></tr>
+<tr><td><b>BCP</b></td><td>Backup, Resilience &amp; Disaster Recovery</td>
+<td class="num">4/4</td>
+<td class="num s-ok">3</td>
+<td class="num s-part">0</td>
+<td class="num s-fail">1</td>
+<td><div class="bar warn"><i style="width:75.0%"></i></div><span class="sub">75.0%</span></td>
+<td><span class="pill r-lim">Limited</span></td></tr>
+<tr><td><b>TPR</b></td><td>Third Party &amp; Supplier Assurance</td>
+<td class="num">4/4</td>
+<td class="num s-ok">2</td>
+<td class="num s-part">2</td>
+<td class="num s-fail">0</td>
+<td><div class="bar warn"><i style="width:75.0%"></i></div><span class="sub">75.0%</span></td>
+<td><span class="pill r-lim">Limited</span></td></tr>
+<tr><td><b>IRM</b></td><td>Incident Response &amp; Breach Notification</td>
+<td class="num">3/4</td>
+<td class="num s-ok">2</td>
+<td class="num s-part">1</td>
+<td class="num s-fail">0</td>
+<td><div class="bar "><i style="width:83.3%"></i></div><span class="sub">83.3%</span></td>
+<td><span class="pill r-rea">Reasonable</span></td></tr>
+<tr><td><b>PHY</b></td><td>Physical &amp; Environmental Security</td>
+<td class="num">4/4</td>
+<td class="num s-ok">3</td>
+<td class="num s-part">1</td>
+<td class="num s-fail">0</td>
+<td><div class="bar "><i style="width:87.5%"></i></div><span class="sub">87.5%</span></td>
+<td><span class="pill r-rea">Reasonable</span></td></tr>
+<tr><td><b>AWR</b></td><td>People, Training &amp; Security Culture</td>
+<td class="num">4/4</td>
+<td class="num s-ok">3</td>
+<td class="num s-part">1</td>
+<td class="num s-fail">0</td>
+<td><div class="bar "><i style="width:87.5%"></i></div><span class="sub">87.5%</span></td>
+<td><span class="pill r-rea">Reasonable</span></td></tr>
+</tbody></table></div>
+<h2>4. Findings &amp; Recommendations</h2>
+
+<div class="finding">
+  <div class="hd">
+    <b>Finding 01 &middot; BCP-02 &mdash; Restore testing performed and evidenced</b>
+    <span><span class="sev sev-critical">critical</span>
+    <span class="s-fail">Non-compliant</span></span>
+  </div>
+  <div class="bd"><dl>
+    <dt>Domain</dt><dd>BCP &ndash; Backup, Resilience &amp; Disaster Recovery</dd>
+    <dt>Control objective</dt><dd>Full restore tests of critical clinical systems are performed at least annually and meet the defined RTO/RPO.</dd>
+    <dt>Test performed</dt><dd>Inspect the most recent restore test report. Compare actual restore time against documented RTO. Confirm data integrity validation was performed.
+      <br><span class='sub'>Sample: Backup test records, 19 months</span></dd>
+    <dt>Observation</dt><dd>No full restore test of the EHR has been performed since the platform migration 19 months ago. Testing is limited to individual file-level restores. The documented RTO of 4 hours has therefore never been validated.</dd>
+    <dt>Root cause</dt><dd>Restore testing requires an isolated recovery environment that has not been funded.</dd>
+    <dt>Risk / impact</dt><dd>In a ransomware scenario the organisation cannot demonstrate that clinical systems can be recovered within the stated RTO. Unvalidated backups are a recurring cause of extended clinical downtime.</dd>
+    <dt>Recommendation</dt><dd>Perform a full restore test of the EHR and PACS to an isolated environment within 60 days, measure actual recovery time against RTO, and repeat at least annually. Report the result to the board.</dd>
+    <dt>Management response</dt><dd>Accepted.</dd>
+    <dt>Owner</dt><dd>Infrastructure Manager</dd>
+    <dt>Target date</dt><dd>2026-08-03</dd>
+    <dt>Evidence ref</dt><dd>WP-BCP-02</dd>
+  </dl>
+  <div class="map" style="padding-top:8px">ISO 27001: <code>A.8.13, A.5.30</code> &nbsp;|&nbsp; DSPT: <code>Assertion 7.2</code> &nbsp;|&nbsp; HIPAA Security: <code>164.308(a)(7)(ii)(D)</code></div>
+  </div>
+</div>
+
+<div class="finding">
+  <div class="hd">
+    <b>Finding 02 &middot; CHG-03 &mdash; Use of live patient data in non-production</b>
+    <span><span class="sev sev-critical">critical</span>
+    <span class="s-fail">Non-compliant</span></span>
+  </div>
+  <div class="bd"><dl>
+    <dt>Domain</dt><dd>CHG &ndash; Change &amp; Development Management</dd>
+    <dt>Control objective</dt><dd>Live patient data is not used for testing unless anonymised/pseudonymised under an approved, documented process.</dd>
+    <dt>Test performed</dt><dd>Query non-production databases for identifiable patient fields. Inspect the data masking process and any approvals for live data use.
+      <br><span class='sub'>Sample: UAT database sampling, 34 users</span></dd>
+    <dt>Observation</dt><dd>The UAT instance of the EHR contains a full copy of live patient data refreshed monthly, including names, NHS numbers and clinical notes. 34 users have access to UAT, of whom 9 have no clinical role. No masking process exists and no approval for the use of live data was found.</dd>
+    <dt>Root cause</dt><dd>The test refresh process was inherited from the previous supplier&#x27;s implementation and has never been reviewed against data protection requirements.</dd>
+    <dt>Risk / impact</dt><dd>Patient data is processed in an environment with weaker access control and no clinical justification, contrary to the purpose limitation and security principles. A compromise of UAT would be a reportable breach of the full patient record.</dd>
+    <dt>Recommendation</dt><dd>Implement pseudonymisation on refresh to non-production, or restrict UAT access to the same population as production pending that capability. Document and approve the process through the DPO.</dd>
+    <dt>Management response</dt><dd>Accepted.</dd>
+    <dt>Owner</dt><dd>EHR System Owner / DPO</dd>
+    <dt>Target date</dt><dd>2026-08-03</dd>
+    <dt>Evidence ref</dt><dd>WP-CHG-03</dd>
+  </dl>
+  <div class="map" style="padding-top:8px">ISO 27001: <code>A.8.33</code> &nbsp;|&nbsp; UK GDPR: <code>Art. 5(1)(b), Art. 32</code></div>
+  </div>
+</div>
+
+<div class="finding">
+  <div class="hd">
+    <b>Finding 03 &middot; IAM-01 &mdash; Joiners, movers, leavers process effectiveness</b>
+    <span><span class="sev sev-critical">critical</span>
+    <span class="s-fail">Non-compliant</span></span>
+  </div>
+  <div class="bd"><dl>
+    <dt>Domain</dt><dd>IAM &ndash; Identity &amp; Access Management</dd>
+    <dt>Control objective</dt><dd>Access is provisioned on documented authorisation and revoked within one working day of termination.</dd>
+    <dt>Test performed</dt><dd>Sample 20 leavers from HR records in the period. Confirm account disablement date in AD/EHR against termination date. Sample 15 joiners for approval evidence.
+      <br><span class='sub'>Sample: 20 of 143 leavers</span></dd>
+    <dt>Observation</dt><dd>20 leavers were sampled against HR termination records. 7 accounts (35%) remained enabled after the leave date, the longest for 94 days. Two of these accounts were used to authenticate to the EHR after the individual had left the organisation.</dd>
+    <dt>Root cause</dt><dd>Leaver notification is a manual email from HR to the service desk with no ticket raised, no SLA and no reconciliation between HR records and Active Directory.</dd>
+    <dt>Risk / impact</dt><dd>Active credentials held by former staff allow unauthorised access to special category health data. Post-termination logons already evidenced constitute a reportable personal data breach exposure under UK GDPR Art. 33.</dd>
+    <dt>Recommendation</dt><dd>Automate leaver de-provisioning from the HR system to Active Directory. As an interim control, implement a monthly reconciliation of the HR leaver report against enabled accounts, with exceptions reported to the IG committee. Investigate the two post-termination logons as potential incidents.</dd>
+    <dt>Management response</dt><dd>Accepted.</dd>
+    <dt>Owner</dt><dd>Head of IT Operations / HR Director</dd>
+    <dt>Target date</dt><dd>2026-08-03</dd>
+    <dt>Evidence ref</dt><dd>WP-IAM-01</dd>
+  </dl>
+  <div class="map" style="padding-top:8px">ISO 27001: <code>A.5.16, A.5.18, A.6.5</code> &nbsp;|&nbsp; DSPT: <code>Assertion 4.2</code> &nbsp;|&nbsp; HIPAA Security: <code>164.308(a)(3)(ii)(C)</code></div>
+  </div>
+</div>
+
+<div class="finding">
+  <div class="hd">
+    <b>Finding 04 &middot; LOG-02 &mdash; Clinical record access auditing</b>
+    <span><span class="sev sev-critical">critical</span>
+    <span class="s-fail">Non-compliant</span></span>
+  </div>
+  <div class="bd"><dl>
+    <dt>Domain</dt><dd>LOG &ndash; Logging, Monitoring &amp; Detection</dd>
+    <dt>Control objective</dt><dd>Access to patient records is logged at record level and proactively audited for inappropriate access (e.g. self, family, VIP lookups).</dd>
+    <dt>Test performed</dt><dd>Inspect the EHR audit log configuration. Obtain evidence of proactive audits performed in the period and outcomes of any alerts raised.
+      <br><span class='sub'>Sample: 12 months of EHR audit data</span></dd>
+    <dt>Observation</dt><dd>The EHR records record-level access, but no proactive audit of inappropriate access has been performed in the audit period. No alerting exists for self-lookup, same-surname or VIP record access. A sample query run during fieldwork identified 3 instances of staff accessing their own record.</dd>
+    <dt>Root cause</dt><dd>Ownership of clinical record access auditing is not assigned; IG assumes IT performs it, IT assumes IG performs it.</dd>
+    <dt>Risk / impact</dt><dd>Inappropriate access to patient records goes undetected. This is a recurring theme in ICO enforcement against healthcare providers and undermines the confidentiality obligation under UK GDPR Art. 5(1)(f).</dd>
+    <dt>Recommendation</dt><dd>Assign ownership of clinical audit review to the IG team. Implement monthly proactive audit covering self, same-surname and VIP access, with exceptions investigated under the disciplinary process. Review the 3 instances identified during fieldwork.</dd>
+    <dt>Management response</dt><dd>Accepted.</dd>
+    <dt>Owner</dt><dd>Head of Information Governance</dd>
+    <dt>Target date</dt><dd>2026-08-26</dd>
+    <dt>Evidence ref</dt><dd>WP-LOG-02</dd>
+  </dl>
+  <div class="map" style="padding-top:8px">ISO 27001: <code>A.8.15</code> &nbsp;|&nbsp; DSPT: <code>Assertion 4.5</code> &nbsp;|&nbsp; UK GDPR: <code>Art. 5(1)(f)</code> &nbsp;|&nbsp; HIPAA Security: <code>164.308(a)(1)(ii)(D)</code></div>
+  </div>
+</div>
+
+<div class="finding">
+  <div class="hd">
+    <b>Finding 05 &middot; VUL-02 &mdash; Patch deployment within defined SLA</b>
+    <span><span class="sev sev-critical">critical</span>
+    <span class="s-fail">Non-compliant</span></span>
+  </div>
+  <div class="bd"><dl>
+    <dt>Domain</dt><dd>VUL &ndash; Vulnerability &amp; Patch Management</dd>
+    <dt>Control objective</dt><dd>Critical and high-severity patches are deployed within 14 days of vendor release (Cyber Essentials requires 14 days for critical).</dd>
+    <dt>Test performed</dt><dd>Select 20 critical/high vulnerabilities from the scan data. Calculate days from vendor release to remediation. Report SLA breach rate.
+      <br><span class='sub'>Sample: 20 of 486 critical/high findings</span></dd>
+    <dt>Observation</dt><dd>Of 20 critical and high vulnerabilities sampled, 13 exceeded the 14-day remediation SLA. Mean time to remediate for critical vulnerabilities was 47 days. Three internet-facing systems carried unpatched vulnerabilities with known public exploits at the time of testing.</dd>
+    <dt>Root cause</dt><dd>Patching windows for clinical systems require clinical sign-off that is only sought monthly, and there is no emergency patching route for actively exploited vulnerabilities.</dd>
+    <dt>Risk / impact</dt><dd>Exploitation of known vulnerabilities on internet-facing infrastructure is the most common initial access vector in healthcare ransomware incidents. Failure also breaches Cyber Essentials certification conditions.</dd>
+    <dt>Recommendation</dt><dd>Define and approve an emergency patching procedure for actively exploited vulnerabilities with a 72-hour target. Remediate the three internet-facing systems immediately. Report SLA compliance monthly to the IG committee.</dd>
+    <dt>Management response</dt><dd>Accepted.</dd>
+    <dt>Owner</dt><dd>Head of IT Operations</dd>
+    <dt>Target date</dt><dd>2026-08-03</dd>
+    <dt>Evidence ref</dt><dd>WP-VUL-02</dd>
+  </dl>
+  <div class="map" style="padding-top:8px">ISO 27001: <code>A.8.8</code> &nbsp;|&nbsp; DSPT: <code>Assertion 9.4</code> &nbsp;|&nbsp; Cyber Essentials: <code>Security Update Management</code></div>
+  </div>
+</div>
+
+<div class="finding">
+  <div class="hd">
+    <b>Finding 06 &middot; VUL-03 &mdash; Unsupported / end-of-life systems</b>
+    <span><span class="sev sev-critical">critical</span>
+    <span class="s-fail">Non-compliant</span></span>
+  </div>
+  <div class="bd"><dl>
+    <dt>Domain</dt><dd>VUL &ndash; Vulnerability &amp; Patch Management</dd>
+    <dt>Control objective</dt><dd>No unsupported operating system or application processes patient data without an extended support agreement and documented compensating controls.</dd>
+    <dt>Test performed</dt><dd>Query the asset register and scan data for EOL platforms. For each, inspect the risk acceptance, expiry date and compensating controls.
+      <br><span class='sub'>Sample: Full asset register (612 hosts)</span></dd>
+    <dt>Observation</dt><dd>14 Windows Server 2012 R2 hosts and 2 Windows 10 21H2 endpoints remain in service, including the radiology PACS gateway. No extended security updates are purchased and no risk acceptance has been formally approved.</dd>
+    <dt>Root cause</dt><dd>Replacement of the PACS gateway is dependent on a supplier upgrade that has been deferred twice; no compensating controls were implemented while the deferral ran.</dd>
+    <dt>Risk / impact</dt><dd>Unsupported platforms receive no security updates and cannot be brought into a defensible position. Compromise of the PACS gateway would disrupt diagnostic imaging and expose patient images.</dd>
+    <dt>Recommendation</dt><dd>Produce a dated decommissioning plan for all end-of-life hosts. Where migration cannot complete within 90 days, isolate the hosts to a restricted VLAN with explicit allow rules and obtain formal risk acceptance from the SIRO.</dd>
+    <dt>Management response</dt><dd>Accepted.</dd>
+    <dt>Owner</dt><dd>IT Director</dd>
+    <dt>Target date</dt><dd>2026-08-26</dd>
+    <dt>Evidence ref</dt><dd>WP-VUL-03</dd>
+  </dl>
+  <div class="map" style="padding-top:8px">ISO 27001: <code>A.8.8</code> &nbsp;|&nbsp; DSPT: <code>Assertion 6.2</code> &nbsp;|&nbsp; Cyber Essentials: <code>Security Update Management</code></div>
+  </div>
+</div>
+
+<div class="finding partial">
+  <div class="hd">
+    <b>Finding 07 &middot; END-04 &mdash; Connected medical device (IoMT) risk control</b>
+    <span><span class="sev sev-high">high</span>
+    <span class="s-part">Partially compliant</span></span>
+  </div>
+  <div class="bd"><dl>
+    <dt>Domain</dt><dd>END &ndash; Endpoint, Mobile &amp; Connected Medical Device Security</dd>
+    <dt>Control objective</dt><dd>Networked medical devices are inventoried, risk-assessed, patched per manufacturer guidance, and covered by a supplier support agreement.</dd>
+    <dt>Test performed</dt><dd>Obtain the medical device inventory. Sample 8 networked devices and test for: OS support status, default credential change, network placement, and manufacturer patch position.
+      <br><span class='sub'>Sample: 8 of 218 registered devices</span></dd>
+    <dt>Observation</dt><dd>The medical device inventory holds 218 networked devices but is not reconciled to network discovery, which identified 27 further devices. Of 8 devices sampled, 3 ran unsupported operating systems and 2 retained default administrative credentials.</dd>
+    <dt>Root cause</dt><dd>Medical devices are procured by clinical departments without IT involvement, so they do not enter the IT asset or vulnerability management processes.</dd>
+    <dt>Risk / impact</dt><dd>Unmanaged connected devices with default credentials provide a persistent foothold on the clinical network and, for some device classes, present a patient safety risk.</dd>
+    <dt>Recommendation</dt><dd>Include IT security sign-off as a mandatory step in medical device procurement. Reconcile the inventory to discovery quarterly. Change default credentials on the devices identified and obtain manufacturer patch positions for unsupported devices.</dd>
+    <dt>Management response</dt><dd>Accepted, timescale agreed with management.</dd>
+    <dt>Owner</dt><dd>Head of Medical Physics / IT Security Manager</dd>
+    <dt>Target date</dt><dd>2026-09-25</dd>
+    <dt>Evidence ref</dt><dd>WP-END-04</dd>
+  </dl>
+  <div class="map" style="padding-top:8px">ISO 27001: <code>A.8.9, A.5.9</code> &nbsp;|&nbsp; DSPT: <code>Assertion 6.3</code> &nbsp;|&nbsp; HIPAA Security: <code>164.310(c)</code></div>
+  </div>
+</div>
+
+<div class="finding partial">
+  <div class="hd">
+    <b>Finding 08 &middot; IAM-02 &mdash; Privileged account governance</b>
+    <span><span class="sev sev-high">high</span>
+    <span class="s-part">Partially compliant</span></span>
+  </div>
+  <div class="bd"><dl>
+    <dt>Domain</dt><dd>IAM &ndash; Identity &amp; Access Management</dd>
+    <dt>Control objective</dt><dd>Administrative accounts are individually assigned, separate from standard accounts, MFA-protected and reviewed quarterly.</dd>
+    <dt>Test performed</dt><dd>Export all members of privileged groups. Test each for named ownership, MFA enrolment, and business justification. Confirm evidence of the last quarterly review.
+      <br><span class='sub'>Sample: 31 privileged accounts (full population)</span></dd>
+    <dt>Observation</dt><dd>31 accounts hold Domain Admin or equivalent privilege. 9 are shared or service accounts without a named owner, and 4 have not been used in over 180 days. Quarterly privileged access reviews were evidenced for Q1 and Q2 only; Q3 and Q4 were not performed.</dd>
+    <dt>Root cause</dt><dd>No privileged access management tooling; reviews depend on the availability of a single infrastructure engineer with no deputy.</dd>
+    <dt>Risk / impact</dt><dd>Excessive and unattributable administrative access increases the blast radius of a compromised credential and prevents attribution during investigation.</dd>
+    <dt>Recommendation</dt><dd>Reduce privileged accounts to named individuals with a documented justification, disable dormant accounts, and place remaining service accounts under managed vault credentials. Reinstate quarterly review with a named deputy reviewer.</dd>
+    <dt>Management response</dt><dd>Accepted, timescale agreed with management.</dd>
+    <dt>Owner</dt><dd>Infrastructure Manager</dd>
+    <dt>Target date</dt><dd>2026-08-26</dd>
+    <dt>Evidence ref</dt><dd>WP-IAM-02</dd>
+  </dl>
+  <div class="map" style="padding-top:8px">ISO 27001: <code>A.8.2, A.5.18</code> &nbsp;|&nbsp; DSPT: <code>Assertion 4.5</code> &nbsp;|&nbsp; HIPAA Security: <code>164.308(a)(4)</code></div>
+  </div>
+</div>
+
+<div class="finding partial">
+  <div class="hd">
+    <b>Finding 09 &middot; NET-02 &mdash; Network segmentation of clinical and medical device VLANs</b>
+    <span><span class="sev sev-high">high</span>
+    <span class="s-part">Partially compliant</span></span>
+  </div>
+  <div class="bd"><dl>
+    <dt>Domain</dt><dd>NET &ndash; Network &amp; Infrastructure Security</dd>
+    <dt>Control objective</dt><dd>Medical devices, clinical systems, guest Wi-Fi and corporate IT are segmented with enforced inter-VLAN access control.</dd>
+    <dt>Test performed</dt><dd>Inspect the network diagram and VLAN/ACL configuration. Perform connectivity testing from the guest and corporate segments toward the medical device VLAN.
+      <br><span class='sub'>Sample: 8 devices tested across 5 VLANs</span></dd>
+    <dt>Observation</dt><dd>Medical device and corporate VLANs are separated, but ACL testing from the corporate segment reached 4 of 8 medical devices tested on management ports (SSH/HTTP). Guest Wi-Fi was correctly isolated. The network diagram was last updated 14 months ago and did not reflect two new VLANs.</dd>
+    <dt>Root cause</dt><dd>Segmentation was implemented at project level without an enforced inter-VLAN policy baseline, and no periodic validation testing takes place.</dd>
+    <dt>Risk / impact</dt><dd>Lateral movement from a compromised corporate endpoint to connected medical devices could affect device availability and, in some device classes, patient safety.</dd>
+    <dt>Recommendation</dt><dd>Apply default-deny inter-VLAN policy with explicit allow rules for clinically required flows. Re-test segmentation after change and at least annually. Refresh the network diagram and place it under change control.</dd>
+    <dt>Management response</dt><dd>Accepted, timescale agreed with management.</dd>
+    <dt>Owner</dt><dd>Network Manager</dd>
+    <dt>Target date</dt><dd>2026-08-26</dd>
+    <dt>Evidence ref</dt><dd>WP-NET-02</dd>
+  </dl>
+  <div class="map" style="padding-top:8px">ISO 27001: <code>A.8.22</code> &nbsp;|&nbsp; DSPT: <code>Assertion 9.5</code> &nbsp;|&nbsp; HIPAA Security: <code>164.312(e)(1)</code></div>
+  </div>
+</div>
+
+<div class="finding partial">
+  <div class="hd">
+    <b>Finding 10 &middot; RSK-02 &mdash; DPIAs completed for high-risk processing</b>
+    <span><span class="sev sev-high">high</span>
+    <span class="s-part">Partially compliant</span></span>
+  </div>
+  <div class="bd"><dl>
+    <dt>Domain</dt><dd>RSK &ndash; Risk Management &amp; Compliance Assurance</dd>
+    <dt>Control objective</dt><dd>A DPIA is completed and signed off before deployment of any system processing special category health data at scale.</dd>
+    <dt>Test performed</dt><dd>Identify systems introduced in the audit period. For each, confirm a DPIA exists, was completed pre-go-live and was reviewed by the DPO.
+      <br><span class='sub'>Sample: 4 systems deployed in period</span></dd>
+    <dt>Observation</dt><dd>Four new systems processing patient data were deployed in the period. DPIAs exist for three; the patient messaging platform went live without one and the DPIA was completed retrospectively 5 months after go-live. Two DPIAs lack evidence of DPO review.</dd>
+    <dt>Root cause</dt><dd>The DPIA trigger sits in the IG process but is not a mandatory gate in the project or procurement lifecycle, so it can be bypassed.</dd>
+    <dt>Risk / impact</dt><dd>Deploying high-risk processing without a prior DPIA is a direct breach of UK GDPR Art. 35 and removes the opportunity to design in mitigations before go-live.</dd>
+    <dt>Recommendation</dt><dd>Make DPIA completion and DPO sign-off a mandatory stage gate in the project and procurement lifecycle, with the CAB unable to approve go-live without it.</dd>
+    <dt>Management response</dt><dd>Accepted, timescale agreed with management.</dd>
+    <dt>Owner</dt><dd>Data Protection Officer</dd>
+    <dt>Target date</dt><dd>2026-09-25</dd>
+    <dt>Evidence ref</dt><dd>WP-RSK-02</dd>
+  </dl>
+  <div class="map" style="padding-top:8px">ISO 27001: <code>A.5.34</code> &nbsp;|&nbsp; DSPT: <code>Assertion 3.4</code> &nbsp;|&nbsp; UK GDPR: <code>Art. 35</code></div>
+  </div>
+</div>
+
+<div class="finding partial">
+  <div class="hd">
+    <b>Finding 11 &middot; TPR-03 &mdash; Third-party remote access control</b>
+    <span><span class="sev sev-high">high</span>
+    <span class="s-part">Partially compliant</span></span>
+  </div>
+  <div class="bd"><dl>
+    <dt>Domain</dt><dd>TPR &ndash; Third Party &amp; Supplier Assurance</dd>
+    <dt>Control objective</dt><dd>Supplier remote access is time-bound, individually attributed, MFA-protected, approved per session and fully logged.</dd>
+    <dt>Test performed</dt><dd>Identify all third-party accounts in the directory. Test for MFA, expiry dates and last logon. Sample 5 support sessions for approval and session recording.
+      <br><span class='sub'>Sample: 21 third-party accounts (full population)</span></dd>
+    <dt>Observation</dt><dd>21 third-party support accounts were identified. 6 lack MFA, 11 have no expiry date set, and per-session approval is not required for 4 suppliers who hold standing access. Session logging is in place for all accounts.</dd>
+    <dt>Root cause</dt><dd>Supplier access is provisioned ad hoc at contract start with no standard control baseline and no periodic review.</dd>
+    <dt>Risk / impact</dt><dd>Standing, unattributed supplier access is a well-documented initial access route in healthcare supply chain incidents and limits the ability to attribute activity.</dd>
+    <dt>Recommendation</dt><dd>Apply a supplier access standard: MFA mandatory, accounts disabled by default and enabled per approved session, maximum 12-month expiry, quarterly review by the contract owner.</dd>
+    <dt>Management response</dt><dd>Accepted, timescale agreed with management.</dd>
+    <dt>Owner</dt><dd>Head of IT Operations</dd>
+    <dt>Target date</dt><dd>2026-08-26</dd>
+    <dt>Evidence ref</dt><dd>WP-TPR-03</dd>
+  </dl>
+  <div class="map" style="padding-top:8px">ISO 27001: <code>A.5.21, A.8.5</code> &nbsp;|&nbsp; DSPT: <code>Assertion 4.5</code></div>
+  </div>
+</div>
+
+<div class="finding partial">
+  <div class="hd">
+    <b>Finding 12 &middot; AWR-01 &mdash; Annual data security training completion</b>
+    <span><span class="sev sev-medium">medium</span>
+    <span class="s-part">Partially compliant</span></span>
+  </div>
+  <div class="bd"><dl>
+    <dt>Domain</dt><dd>AWR &ndash; People, Training &amp; Security Culture</dd>
+    <dt>Control objective</dt><dd>At least 95% of staff, including contractors and board members, complete annual data security awareness training.</dd>
+    <dt>Test performed</dt><dd>Obtain the LMS completion report. Calculate the completion rate against the current headcount. Test that non-completers have been escalated.
+      <br><span class='sub'>Sample: LMS report, 1,240 staff</span></dd>
+    <dt>Observation</dt><dd>Annual data security training completion was 87% against the 95% DSPT threshold. Completion among medical staff was 71% and among board members 60%. Non-completion is not escalated to line managers.</dd>
+    <dt>Root cause</dt><dd>Training is assigned via the LMS but completion is not linked to appraisal or to system access, and no escalation route exists.</dd>
+    <dt>Risk / impact</dt><dd>The organisation does not meet the DSPT training standard, which affects the toolkit submission. Untrained staff are materially more likely to fall to phishing.</dd>
+    <dt>Recommendation</dt><dd>Escalate non-completion to line managers at 30 days and to executive leads at 60 days. Link completion to the appraisal process. Report completion rates by staff group monthly to the IG committee.</dd>
+    <dt>Management response</dt><dd>Accepted, timescale agreed with management.</dd>
+    <dt>Owner</dt><dd>Head of Information Governance / L&amp;D</dd>
+    <dt>Target date</dt><dd>2026-09-25</dd>
+    <dt>Evidence ref</dt><dd>WP-AWR-01</dd>
+  </dl>
+  <div class="map" style="padding-top:8px">ISO 27001: <code>A.6.3</code> &nbsp;|&nbsp; DSPT: <code>Assertion 3.1</code> &nbsp;|&nbsp; HIPAA Security: <code>164.308(a)(5)</code></div>
+  </div>
+</div>
+
+<div class="finding partial">
+  <div class="hd">
+    <b>Finding 13 &middot; DPR-03 &mdash; Data subject rights fulfilment within statutory timescales</b>
+    <span><span class="sev sev-medium">medium</span>
+    <span class="s-part">Partially compliant</span></span>
+  </div>
+  <div class="bd"><dl>
+    <dt>Domain</dt><dd>DPR &ndash; Data Protection &amp; Privacy</dd>
+    <dt>Control objective</dt><dd>SARs and other rights requests are logged and completed within one calendar month (or a documented extension).</dd>
+    <dt>Test performed</dt><dd>Select 10 requests from the SAR log. Calculate elapsed days from receipt to response. Test for evidence of identity verification and redaction review.
+      <br><span class='sub'>Sample: 10 of 63 SARs</span></dd>
+    <dt>Observation</dt><dd>Of 10 subject access requests sampled, 8 were completed within one calendar month, 1 took 47 days with no extension notified, and 1 remained open at 62 days. Identity verification was evidenced in all cases.</dd>
+    <dt>Root cause</dt><dd>SAR handling rests with a single IG officer with no cover during absence, and no escalation triggers when a request approaches 21 days.</dd>
+    <dt>Risk / impact</dt><dd>Late responses without a notified extension breach UK GDPR Art. 12(3) and are a common trigger for ICO complaints.</dd>
+    <dt>Recommendation</dt><dd>Introduce automated escalation at day 21, cross-train a second officer, and report open SAR aging to the IG committee monthly.</dd>
+    <dt>Management response</dt><dd>Accepted, timescale agreed with management.</dd>
+    <dt>Owner</dt><dd>Head of Information Governance</dd>
+    <dt>Target date</dt><dd>2026-09-25</dd>
+    <dt>Evidence ref</dt><dd>WP-DPR-03</dd>
+  </dl>
+  <div class="map" style="padding-top:8px">DSPT: <code>Assertion 3.2</code> &nbsp;|&nbsp; UK GDPR: <code>Art. 12(3), Art. 15</code></div>
+  </div>
+</div>
+
+<div class="finding partial">
+  <div class="hd">
+    <b>Finding 14 &middot; IRM-01 &mdash; Incident response plan tested</b>
+    <span><span class="sev sev-medium">medium</span>
+    <span class="s-part">Partially compliant</span></span>
+  </div>
+  <div class="bd"><dl>
+    <dt>Domain</dt><dd>IRM &ndash; Incident Response &amp; Breach Notification</dd>
+    <dt>Control objective</dt><dd>A documented IR plan defines roles, severity criteria and escalation, and is exercised at least annually including a ransomware scenario.</dd>
+    <dt>Test performed</dt><dd>Inspect the IR plan and the most recent tabletop exercise report. Verify actions from lessons learned were closed.
+      <br><span class='sub'>Sample: IR plan and exercise records</span></dd>
+    <dt>Observation</dt><dd>An incident response plan exists and was updated in the period. The last tabletop exercise was 22 months ago and did not cover a ransomware scenario. Four of six lessons learned from that exercise remain open.</dd>
+    <dt>Root cause</dt><dd>Exercising is not scheduled in the assurance calendar and competes with operational priorities.</dd>
+    <dt>Risk / impact</dt><dd>An untested plan and unclosed lessons reduce the effectiveness of response at the point of a real incident, extending clinical downtime.</dd>
+    <dt>Recommendation</dt><dd>Run a ransomware tabletop covering clinical downtime and board communications within 90 days, involving clinical leadership. Close the four outstanding actions and schedule exercising annually in the assurance calendar.</dd>
+    <dt>Management response</dt><dd>Accepted, timescale agreed with management.</dd>
+    <dt>Owner</dt><dd>IT Security Manager</dd>
+    <dt>Target date</dt><dd>2026-09-25</dd>
+    <dt>Evidence ref</dt><dd>WP-IRM-01</dd>
+  </dl>
+  <div class="map" style="padding-top:8px">ISO 27001: <code>A.5.24, A.5.26</code> &nbsp;|&nbsp; DSPT: <code>Assertion 8.1</code> &nbsp;|&nbsp; HIPAA Security: <code>164.308(a)(6)</code></div>
+  </div>
+</div>
+
+<div class="finding partial">
+  <div class="hd">
+    <b>Finding 15 &middot; ISG-04 &mdash; Asset inventory completeness</b>
+    <span><span class="sev sev-medium">medium</span>
+    <span class="s-part">Partially compliant</span></span>
+  </div>
+  <div class="bd"><dl>
+    <dt>Domain</dt><dd>ISG &ndash; Information Security Governance &amp; Policy</dd>
+    <dt>Control objective</dt><dd>A maintained inventory records all information assets and systems processing patient data, with named owners and criticality ratings.</dd>
+    <dt>Test performed</dt><dd>Reconcile the asset register against network discovery output and the finance fixed-asset list. Investigate variances greater than 5%.
+      <br><span class='sub'>Sample: Full register vs discovery scan</span></dd>
+    <dt>Observation</dt><dd>The asset register records 612 hosts against 671 identified by network discovery, a variance of 8.8%. 43 entries have no named owner and criticality ratings are absent for all non-server assets.</dd>
+    <dt>Root cause</dt><dd>The register is maintained manually in a spreadsheet and updated only at procurement, not at decommission or discovery.</dd>
+    <dt>Risk / impact</dt><dd>Assets outside the register are outside patching, monitoring and backup scope, and cannot be protected or recovered.</dd>
+    <dt>Recommendation</dt><dd>Move the register to the endpoint management platform as the source of truth, with monthly automated reconciliation against discovery and exception reporting.</dd>
+    <dt>Management response</dt><dd>Accepted, timescale agreed with management.</dd>
+    <dt>Owner</dt><dd>IT Asset Manager</dd>
+    <dt>Target date</dt><dd>2026-09-25</dd>
+    <dt>Evidence ref</dt><dd>WP-ISG-04</dd>
+  </dl>
+  <div class="map" style="padding-top:8px">ISO 27001: <code>A.5.9</code> &nbsp;|&nbsp; DSPT: <code>Assertion 1.4</code> &nbsp;|&nbsp; HIPAA Security: <code>164.310(d)(1)</code></div>
+  </div>
+</div>
+
+<div class="finding partial">
+  <div class="hd">
+    <b>Finding 16 &middot; PHY-01 &mdash; Data centre / comms room access control</b>
+    <span><span class="sev sev-medium">medium</span>
+    <span class="s-part">Partially compliant</span></span>
+  </div>
+  <div class="bd"><dl>
+    <dt>Domain</dt><dd>PHY &ndash; Physical &amp; Environmental Security</dd>
+    <dt>Control objective</dt><dd>Access to server and comms rooms is restricted to authorised personnel, logged, and reviewed at least six-monthly.</dd>
+    <dt>Test performed</dt><dd>Obtain the access control list for the comms room. Test each holder for continued business need. Inspect the access log for unexplained entries.
+      <br><span class='sub'>Sample: 23 badge holders (full population)</span></dd>
+    <dt>Observation</dt><dd>The comms room access list holds 23 people, of whom 5 have left the organisation or changed role. The last documented access review was 16 months ago. Access logs are retained but not reviewed.</dd>
+    <dt>Root cause</dt><dd>The access list is owned by Facilities and is not linked to the leaver process or the IT access review cycle.</dd>
+    <dt>Risk / impact</dt><dd>Unauthorised physical access to network infrastructure bypasses logical controls entirely and would not be detected.</dd>
+    <dt>Recommendation</dt><dd>Remove the 5 invalid holders immediately. Bring comms room access into the six-monthly access review cycle and the leaver checklist.</dd>
+    <dt>Management response</dt><dd>Accepted, timescale agreed with management.</dd>
+    <dt>Owner</dt><dd>Facilities Manager / Infrastructure Manager</dd>
+    <dt>Target date</dt><dd>2026-08-26</dd>
+    <dt>Evidence ref</dt><dd>WP-PHY-01</dd>
+  </dl>
+  <div class="map" style="padding-top:8px">ISO 27001: <code>A.7.1, A.7.2</code> &nbsp;|&nbsp; DSPT: <code>Assertion 4.5</code> &nbsp;|&nbsp; HIPAA Security: <code>164.310(a)(1)</code></div>
+  </div>
+</div>
+
+<div class="finding partial">
+  <div class="hd">
+    <b>Finding 17 &middot; TPR-01 &mdash; Data processing agreements in place</b>
+    <span><span class="sev sev-medium">medium</span>
+    <span class="s-part">Partially compliant</span></span>
+  </div>
+  <div class="bd"><dl>
+    <dt>Domain</dt><dd>TPR &ndash; Third Party &amp; Supplier Assurance</dd>
+    <dt>Control objective</dt><dd>Every processor handling patient data is bound by an Art. 28 compliant contract including security, sub-processor and breach notification terms.</dd>
+    <dt>Test performed</dt><dd>Select 10 suppliers from the supplier register handling patient data. Inspect contracts for Art. 28(3) clauses.
+      <br><span class='sub'>Sample: 10 of 84 suppliers</span></dd>
+    <dt>Observation</dt><dd>Of 10 suppliers processing patient data, 8 hold Art. 28 compliant contracts. 2 operate under purchase-order terms only with no data processing clauses, one of which hosts patient-facing appointment data. This finding was raised in the prior year audit and remains open.</dd>
+    <dt>Root cause</dt><dd>Contract remediation was assigned to procurement but no completion date was tracked after the original owner left the organisation.</dd>
+    <dt>Risk / impact</dt><dd>Without Art. 28 terms the organisation cannot demonstrate that processors are bound to appropriate security, sub-processor and breach notification obligations, and remains liable as controller.</dd>
+    <dt>Recommendation</dt><dd>Execute data processing agreements with both suppliers or cease the processing. Reassign ownership of the prior-year action and report closure to the audit committee.</dd>
+    <dt>Management response</dt><dd>Accepted, timescale agreed with management.</dd>
+    <dt>Owner</dt><dd>Head of Procurement / DPO</dd>
+    <dt>Target date</dt><dd><span class="overdue">2026-06-16 &mdash; OVERDUE</span></dd>
+    <dt>Evidence ref</dt><dd>WP-TPR-01</dd>
+  </dl>
+  <div class="map" style="padding-top:8px">ISO 27001: <code>A.5.19, A.5.20</code> &nbsp;|&nbsp; DSPT: <code>Assertion 1.5</code> &nbsp;|&nbsp; UK GDPR: <code>Art. 28</code></div>
+  </div>
+</div>
+
+<div class="finding partial">
+  <div class="hd">
+    <b>Finding 18 &middot; LOG-04 &mdash; Time synchronisation</b>
+    <span><span class="sev sev-low">low</span>
+    <span class="s-part">Partially compliant</span></span>
+  </div>
+  <div class="bd"><dl>
+    <dt>Domain</dt><dd>LOG &ndash; Logging, Monitoring &amp; Detection</dd>
+    <dt>Control objective</dt><dd>All systems synchronise to a common authoritative time source to preserve log integrity and forensic admissibility.</dd>
+    <dt>Test performed</dt><dd>Sample 8 systems and compare configured NTP source and current clock drift.
+      <br><span class='sub'>Sample: 8 systems sampled</span></dd>
+    <dt>Observation</dt><dd>Of 8 systems sampled, 2 network appliances synchronise to an external NTP source rather than the internal authoritative source, with observed drift of up to 4 minutes.</dd>
+    <dt>Root cause</dt><dd>Appliance builds were not covered by the standard NTP configuration baseline.</dd>
+    <dt>Risk / impact</dt><dd>Inconsistent timestamps complicate correlation of events across systems during investigation and can undermine evidential reliability.</dd>
+    <dt>Recommendation</dt><dd>Add NTP source to the network device build standard and correct the two appliances.</dd>
+    <dt>Management response</dt><dd>Accepted, timescale agreed with management.</dd>
+    <dt>Owner</dt><dd>Network Manager</dd>
+    <dt>Target date</dt><dd>2026-10-25</dd>
+    <dt>Evidence ref</dt><dd>WP-LOG-04</dd>
+  </dl>
+  <div class="map" style="padding-top:8px">ISO 27001: <code>A.8.17</code></div>
+  </div>
+</div>
+<h2>5. Corrective Action Plan</h2>
+<div class='tw'><table><thead><tr><th>Ref</th><th>Severity</th><th>Agreed action</th><th>Owner</th><th>Target date</th></tr></thead><tbody>
+<tr><td><b>BCP-02</b></td>
+<td><span class="sev sev-critical">critical</span></td>
+<td>Perform a full restore test of the EHR and PACS to an isolated environment within 60 days, measure actual recovery time against RTO, and repeat at least annually. Report the result to the board.</td><td>Infrastructure Manager</td>
+<td>2026-08-03</td></tr>
+<tr><td><b>CHG-03</b></td>
+<td><span class="sev sev-critical">critical</span></td>
+<td>Implement pseudonymisation on refresh to non-production, or restrict UAT access to the same population as production pending that capability. Document and approve the process through the DPO.</td><td>EHR System Owner / DPO</td>
+<td>2026-08-03</td></tr>
+<tr><td><b>IAM-01</b></td>
+<td><span class="sev sev-critical">critical</span></td>
+<td>Automate leaver de-provisioning from the HR system to Active Directory. As an interim control, implement a monthly reconciliation of the HR leaver report against enabled accounts, with exceptions reported to the IG committee. Investigate the two post-termination logons as potential incidents.</td><td>Head of IT Operations / HR Director</td>
+<td>2026-08-03</td></tr>
+<tr><td><b>LOG-02</b></td>
+<td><span class="sev sev-critical">critical</span></td>
+<td>Assign ownership of clinical audit review to the IG team. Implement monthly proactive audit covering self, same-surname and VIP access, with exceptions investigated under the disciplinary process. Review the 3 instances identified during fieldwork.</td><td>Head of Information Governance</td>
+<td>2026-08-26</td></tr>
+<tr><td><b>VUL-02</b></td>
+<td><span class="sev sev-critical">critical</span></td>
+<td>Define and approve an emergency patching procedure for actively exploited vulnerabilities with a 72-hour target. Remediate the three internet-facing systems immediately. Report SLA compliance monthly to the IG committee.</td><td>Head of IT Operations</td>
+<td>2026-08-03</td></tr>
+<tr><td><b>VUL-03</b></td>
+<td><span class="sev sev-critical">critical</span></td>
+<td>Produce a dated decommissioning plan for all end-of-life hosts. Where migration cannot complete within 90 days, isolate the hosts to a restricted VLAN with explicit allow rules and obtain formal risk acceptance from the SIRO.</td><td>IT Director</td>
+<td>2026-08-26</td></tr>
+<tr><td><b>END-04</b></td>
+<td><span class="sev sev-high">high</span></td>
+<td>Include IT security sign-off as a mandatory step in medical device procurement. Reconcile the inventory to discovery quarterly. Change default credentials on the devices identified and obtain manufacturer patch positions for unsupported devices.</td><td>Head of Medical Physics / IT Security Manager</td>
+<td>2026-09-25</td></tr>
+<tr><td><b>IAM-02</b></td>
+<td><span class="sev sev-high">high</span></td>
+<td>Reduce privileged accounts to named individuals with a documented justification, disable dormant accounts, and place remaining service accounts under managed vault credentials. Reinstate quarterly review with a named deputy reviewer.</td><td>Infrastructure Manager</td>
+<td>2026-08-26</td></tr>
+<tr><td><b>NET-02</b></td>
+<td><span class="sev sev-high">high</span></td>
+<td>Apply default-deny inter-VLAN policy with explicit allow rules for clinically required flows. Re-test segmentation after change and at least annually. Refresh the network diagram and place it under change control.</td><td>Network Manager</td>
+<td>2026-08-26</td></tr>
+<tr><td><b>RSK-02</b></td>
+<td><span class="sev sev-high">high</span></td>
+<td>Make DPIA completion and DPO sign-off a mandatory stage gate in the project and procurement lifecycle, with the CAB unable to approve go-live without it.</td><td>Data Protection Officer</td>
+<td>2026-09-25</td></tr>
+<tr><td><b>TPR-03</b></td>
+<td><span class="sev sev-high">high</span></td>
+<td>Apply a supplier access standard: MFA mandatory, accounts disabled by default and enabled per approved session, maximum 12-month expiry, quarterly review by the contract owner.</td><td>Head of IT Operations</td>
+<td>2026-08-26</td></tr>
+<tr><td><b>AWR-01</b></td>
+<td><span class="sev sev-medium">medium</span></td>
+<td>Escalate non-completion to line managers at 30 days and to executive leads at 60 days. Link completion to the appraisal process. Report completion rates by staff group monthly to the IG committee.</td><td>Head of Information Governance / L&amp;D</td>
+<td>2026-09-25</td></tr>
+<tr><td><b>DPR-03</b></td>
+<td><span class="sev sev-medium">medium</span></td>
+<td>Introduce automated escalation at day 21, cross-train a second officer, and report open SAR aging to the IG committee monthly.</td><td>Head of Information Governance</td>
+<td>2026-09-25</td></tr>
+<tr><td><b>IRM-01</b></td>
+<td><span class="sev sev-medium">medium</span></td>
+<td>Run a ransomware tabletop covering clinical downtime and board communications within 90 days, involving clinical leadership. Close the four outstanding actions and schedule exercising annually in the assurance calendar.</td><td>IT Security Manager</td>
+<td>2026-09-25</td></tr>
+<tr><td><b>ISG-04</b></td>
+<td><span class="sev sev-medium">medium</span></td>
+<td>Move the register to the endpoint management platform as the source of truth, with monthly automated reconciliation against discovery and exception reporting.</td><td>IT Asset Manager</td>
+<td>2026-09-25</td></tr>
+<tr><td><b>PHY-01</b></td>
+<td><span class="sev sev-medium">medium</span></td>
+<td>Remove the 5 invalid holders immediately. Bring comms room access into the six-monthly access review cycle and the leaver checklist.</td><td>Facilities Manager / Infrastructure Manager</td>
+<td>2026-08-26</td></tr>
+<tr><td><b>TPR-01</b></td>
+<td><span class="sev sev-medium">medium</span></td>
+<td>Execute data processing agreements with both suppliers or cease the processing. Reassign ownership of the prior-year action and report closure to the audit committee.</td><td>Head of Procurement / DPO</td>
+<td><span class="overdue">2026-06-16</span></td></tr>
+<tr><td><b>LOG-04</b></td>
+<td><span class="sev sev-low">low</span></td>
+<td>Add NTP source to the network device build standard and correct the two appliances.</td><td>Network Manager</td>
+<td>2026-10-25</td></tr>
+</tbody></table></div>
+<h2>Appendix A &ndash; Detailed Control Test Log</h2>
+<div class='tw'><table><thead><tr><th>Ref</th><th>Control</th><th>Control severity</th><th>Result</th><th>Evidence ref</th></tr></thead><tbody>
+<tr><td colspan='5' style='background:#f6f8fa'><b>ISG &ndash; Information Security Governance &amp; Policy</b></td></tr>
+<tr><td>ISG-01</td><td>Board-level accountability for data security</td>
+<td><span class="sev sev-high">high</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-ISG-01</td></tr>
+<tr><td>ISG-02</td><td>Information security policy suite approved and current</td>
+<td><span class="sev sev-medium">medium</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-ISG-02</td></tr>
+<tr><td>ISG-03</td><td>Policy communication and staff acknowledgement</td>
+<td><span class="sev sev-medium">medium</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-ISG-03</td></tr>
+<tr><td>ISG-04</td><td>Asset inventory completeness</td>
+<td><span class="sev sev-high">high</span></td>
+<td class="s-part">Partially compliant</td>
+<td class="sub">WP-ISG-04</td></tr>
+<tr><td colspan='5' style='background:#f6f8fa'><b>RSK &ndash; Risk Management &amp; Compliance Assurance</b></td></tr>
+<tr><td>RSK-01</td><td>Information risk register maintained</td>
+<td><span class="sev sev-high">high</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-RSK-01</td></tr>
+<tr><td>RSK-02</td><td>DPIAs completed for high-risk processing</td>
+<td><span class="sev sev-critical">critical</span></td>
+<td class="s-part">Partially compliant</td>
+<td class="sub">WP-RSK-02</td></tr>
+<tr><td>RSK-03</td><td>Independent security testing performed</td>
+<td><span class="sev sev-high">high</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-RSK-03</td></tr>
+<tr><td>RSK-04</td><td>Certification and regulatory submissions current</td>
+<td><span class="sev sev-medium">medium</span></td>
+<td class="s-na">Not applicable</td>
+<td class="sub">WP-RSK-04</td></tr>
+<tr><td colspan='5' style='background:#f6f8fa'><b>IAM &ndash; Identity &amp; Access Management</b></td></tr>
+<tr><td>IAM-01</td><td>Joiners, movers, leavers process effectiveness</td>
+<td><span class="sev sev-critical">critical</span></td>
+<td class="s-fail">Non-compliant</td>
+<td class="sub">WP-IAM-01</td></tr>
+<tr><td>IAM-02</td><td>Privileged account governance</td>
+<td><span class="sev sev-critical">critical</span></td>
+<td class="s-part">Partially compliant</td>
+<td class="sub">WP-IAM-02</td></tr>
+<tr><td>IAM-03</td><td>Multi-factor authentication coverage</td>
+<td><span class="sev sev-critical">critical</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-IAM-03</td></tr>
+<tr><td>IAM-04</td><td>Periodic user access recertification</td>
+<td><span class="sev sev-high">high</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-IAM-04</td></tr>
+<tr><td>IAM-05</td><td>Shared and generic account control</td>
+<td><span class="sev sev-high">high</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-IAM-05</td></tr>
+<tr><td colspan='5' style='background:#f6f8fa'><b>DPR &ndash; Data Protection &amp; Privacy</b></td></tr>
+<tr><td>DPR-01</td><td>Record of Processing Activities (ROPA) accuracy</td>
+<td><span class="sev sev-high">high</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-DPR-01</td></tr>
+<tr><td>DPR-02</td><td>Data retention and secure disposal</td>
+<td><span class="sev sev-medium">medium</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-DPR-02</td></tr>
+<tr><td>DPR-03</td><td>Data subject rights fulfilment within statutory timescales</td>
+<td><span class="sev sev-high">high</span></td>
+<td class="s-part">Partially compliant</td>
+<td class="sub">WP-DPR-03</td></tr>
+<tr><td>DPR-04</td><td>International transfers safeguarded</td>
+<td><span class="sev sev-high">high</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-DPR-04</td></tr>
+<tr><td colspan='5' style='background:#f6f8fa'><b>NET &ndash; Network &amp; Infrastructure Security</b></td></tr>
+<tr><td>NET-01</td><td>Firewall rule base governance</td>
+<td><span class="sev sev-high">high</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-NET-01</td></tr>
+<tr><td>NET-02</td><td>Network segmentation of clinical and medical device VLANs</td>
+<td><span class="sev sev-critical">critical</span></td>
+<td class="s-part">Partially compliant</td>
+<td class="sub">WP-NET-02</td></tr>
+<tr><td>NET-03</td><td>Remote access security</td>
+<td><span class="sev sev-critical">critical</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-NET-03</td></tr>
+<tr><td>NET-04</td><td>Encryption of data in transit</td>
+<td><span class="sev sev-high">high</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-NET-04</td></tr>
+<tr><td colspan='5' style='background:#f6f8fa'><b>END &ndash; Endpoint, Mobile &amp; Connected Medical Device Security</b></td></tr>
+<tr><td>END-01</td><td>Full-disk encryption on all endpoints</td>
+<td><span class="sev sev-critical">critical</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-END-01</td></tr>
+<tr><td>END-02</td><td>Endpoint detection and response coverage</td>
+<td><span class="sev sev-critical">critical</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-END-02</td></tr>
+<tr><td>END-03</td><td>Mobile device management for clinical mobile use</td>
+<td><span class="sev sev-high">high</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-END-03</td></tr>
+<tr><td>END-04</td><td>Connected medical device (IoMT) risk control</td>
+<td><span class="sev sev-critical">critical</span></td>
+<td class="s-part">Partially compliant</td>
+<td class="sub">WP-END-04</td></tr>
+<tr><td>END-05</td><td>Removable media control</td>
+<td><span class="sev sev-medium">medium</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-END-05</td></tr>
+<tr><td colspan='5' style='background:#f6f8fa'><b>VUL &ndash; Vulnerability &amp; Patch Management</b></td></tr>
+<tr><td>VUL-01</td><td>Authenticated vulnerability scanning cadence</td>
+<td><span class="sev sev-high">high</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-VUL-01</td></tr>
+<tr><td>VUL-02</td><td>Patch deployment within defined SLA</td>
+<td><span class="sev sev-critical">critical</span></td>
+<td class="s-fail">Non-compliant</td>
+<td class="sub">WP-VUL-02</td></tr>
+<tr><td>VUL-03</td><td>Unsupported / end-of-life systems</td>
+<td><span class="sev sev-critical">critical</span></td>
+<td class="s-fail">Non-compliant</td>
+<td class="sub">WP-VUL-03</td></tr>
+<tr><td>VUL-04</td><td>Secure baseline configuration</td>
+<td><span class="sev sev-medium">medium</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-VUL-04</td></tr>
+<tr><td colspan='5' style='background:#f6f8fa'><b>CHG &ndash; Change &amp; Development Management</b></td></tr>
+<tr><td>CHG-01</td><td>Change authorisation and clinical safety sign-off</td>
+<td><span class="sev sev-high">high</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-CHG-01</td></tr>
+<tr><td>CHG-02</td><td>Segregation of development, test and production</td>
+<td><span class="sev sev-high">high</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-CHG-02</td></tr>
+<tr><td>CHG-03</td><td>Use of live patient data in non-production</td>
+<td><span class="sev sev-critical">critical</span></td>
+<td class="s-fail">Non-compliant</td>
+<td class="sub">WP-CHG-03</td></tr>
+<tr><td>CHG-04</td><td>Emergency change control</td>
+<td><span class="sev sev-medium">medium</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-CHG-04</td></tr>
+<tr><td colspan='5' style='background:#f6f8fa'><b>LOG &ndash; Logging, Monitoring &amp; Detection</b></td></tr>
+<tr><td>LOG-01</td><td>Centralised log collection and retention</td>
+<td><span class="sev sev-high">high</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-LOG-01</td></tr>
+<tr><td>LOG-02</td><td>Clinical record access auditing</td>
+<td><span class="sev sev-critical">critical</span></td>
+<td class="s-fail">Non-compliant</td>
+<td class="sub">WP-LOG-02</td></tr>
+<tr><td>LOG-03</td><td>Alert triage and response coverage</td>
+<td><span class="sev sev-high">high</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-LOG-03</td></tr>
+<tr><td>LOG-04</td><td>Time synchronisation</td>
+<td><span class="sev sev-low">low</span></td>
+<td class="s-part">Partially compliant</td>
+<td class="sub">WP-LOG-04</td></tr>
+<tr><td colspan='5' style='background:#f6f8fa'><b>BCP &ndash; Backup, Resilience &amp; Disaster Recovery</b></td></tr>
+<tr><td>BCP-01</td><td>Backup coverage and immutability</td>
+<td><span class="sev sev-critical">critical</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-BCP-01</td></tr>
+<tr><td>BCP-02</td><td>Restore testing performed and evidenced</td>
+<td><span class="sev sev-critical">critical</span></td>
+<td class="s-fail">Non-compliant</td>
+<td class="sub">WP-BCP-02</td></tr>
+<tr><td>BCP-03</td><td>Business continuity plan for IT outage</td>
+<td><span class="sev sev-high">high</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-BCP-03</td></tr>
+<tr><td>BCP-04</td><td>Single points of failure identified</td>
+<td><span class="sev sev-medium">medium</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-BCP-04</td></tr>
+<tr><td colspan='5' style='background:#f6f8fa'><b>TPR &ndash; Third Party &amp; Supplier Assurance</b></td></tr>
+<tr><td>TPR-01</td><td>Data processing agreements in place</td>
+<td><span class="sev sev-high">high</span></td>
+<td class="s-part">Partially compliant</td>
+<td class="sub">WP-TPR-01</td></tr>
+<tr><td>TPR-02</td><td>Supplier security due diligence and ongoing monitoring</td>
+<td><span class="sev sev-high">high</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-TPR-02</td></tr>
+<tr><td>TPR-03</td><td>Third-party remote access control</td>
+<td><span class="sev sev-critical">critical</span></td>
+<td class="s-part">Partially compliant</td>
+<td class="sub">WP-TPR-03</td></tr>
+<tr><td>TPR-04</td><td>Exit and data return / deletion provisions</td>
+<td><span class="sev sev-medium">medium</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-TPR-04</td></tr>
+<tr><td colspan='5' style='background:#f6f8fa'><b>IRM &ndash; Incident Response &amp; Breach Notification</b></td></tr>
+<tr><td>IRM-01</td><td>Incident response plan tested</td>
+<td><span class="sev sev-high">high</span></td>
+<td class="s-part">Partially compliant</td>
+<td class="sub">WP-IRM-01</td></tr>
+<tr><td>IRM-02</td><td>Breach notification within 72 hours</td>
+<td><span class="sev sev-critical">critical</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-IRM-02</td></tr>
+<tr><td>IRM-03</td><td>Incident logging and root cause analysis</td>
+<td><span class="sev sev-medium">medium</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-IRM-03</td></tr>
+<tr><td>IRM-04</td><td>Forensic readiness and evidence handling</td>
+<td><span class="sev sev-low">low</span></td>
+<td class="s-untested">Not yet tested</td>
+<td class="sub"></td></tr>
+<tr><td colspan='5' style='background:#f6f8fa'><b>PHY &ndash; Physical &amp; Environmental Security</b></td></tr>
+<tr><td>PHY-01</td><td>Data centre / comms room access control</td>
+<td><span class="sev sev-high">high</span></td>
+<td class="s-part">Partially compliant</td>
+<td class="sub">WP-PHY-01</td></tr>
+<tr><td>PHY-02</td><td>Clear screen and unattended workstation controls</td>
+<td><span class="sev sev-medium">medium</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-PHY-02</td></tr>
+<tr><td>PHY-03</td><td>Secure disposal of IT assets</td>
+<td><span class="sev sev-high">high</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-PHY-03</td></tr>
+<tr><td>PHY-04</td><td>Environmental controls in technical areas</td>
+<td><span class="sev sev-medium">medium</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-PHY-04</td></tr>
+<tr><td colspan='5' style='background:#f6f8fa'><b>AWR &ndash; People, Training &amp; Security Culture</b></td></tr>
+<tr><td>AWR-01</td><td>Annual data security training completion</td>
+<td><span class="sev sev-high">high</span></td>
+<td class="s-part">Partially compliant</td>
+<td class="sub">WP-AWR-01</td></tr>
+<tr><td>AWR-02</td><td>Pre-employment screening</td>
+<td><span class="sev sev-high">high</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-AWR-02</td></tr>
+<tr><td>AWR-03</td><td>Phishing simulation programme</td>
+<td><span class="sev sev-medium">medium</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-AWR-03</td></tr>
+<tr><td>AWR-04</td><td>Confidentiality obligations and disciplinary process</td>
+<td><span class="sev sev-low">low</span></td>
+<td class="s-ok">Compliant</td>
+<td class="sub">WP-AWR-04</td></tr>
+</tbody></table></div>
+<div class="foot">
+Prepared by A. Tony, Lead IT Auditor &middot; Northgate Health Group &middot; Report reference ITA-202607-C302<br>
+This report is issued for the internal use of management and the audit committee. It reflects the
+control environment observed during the audit period and does not constitute a guarantee that all
+weaknesses have been identified. Distribution outside the organisation requires the approval of the
+Senior Information Risk Owner.
+</div></div>

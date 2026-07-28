@@ -1,0 +1,21 @@
+# Live audit working files and issued reports - these hold real auditee findings
+# and must never be committed. The demo_* files are the fictional worked example.
+audit_*.json
+ITA-*
+!demo_audit.json
+!demo_audit_report.html
+!demo_audit_action_plan.csv
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
