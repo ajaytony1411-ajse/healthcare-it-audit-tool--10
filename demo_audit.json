@@ -3,7 +3,7 @@
   "site": "Head office, 3 clinical sites and hosted data centre",
   "lead_auditor": "A. Tony, Lead IT Auditor",
   "period_start": "2025-07-01",
-  "period_end": "2026-07-27",
+  "period_end": "2026-07-28",
   "framework": {
     "framework_id": "HC-IT-GRC-2026",
     "framework_name": "Healthcare IT & Information Security Audit Programme",
@@ -1079,9 +1079,9 @@
       }
     ]
   },
-  "audit_ref": "ITA-202607-C302",
-  "opened_on": "2026-07-27",
-  "report_date": "2026-07-27",
+  "audit_ref": "ITA-202607-BE6B",
+  "opened_on": "2026-07-28",
+  "report_date": "2026-07-28",
   "scope_notes": "Fieldwork covered central IT infrastructure, the electronic health record, PACS, the practice management system and supporting cloud services. Clinical practice, medical device efficacy and financial controls were outside scope. Forensic readiness testing (IRM-04) was deferred at management request and will be covered in the next cycle; this constitutes a scope limitation.",
   "results": {
     "ISG-01": {
@@ -1097,7 +1097,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "ISG-02": {
       "check_id": "ISG-02",
@@ -1112,7 +1112,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "ISG-03": {
       "check_id": "ISG-03",
@@ -1127,7 +1127,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "ISG-04": {
       "check_id": "ISG-04",
@@ -1140,9 +1140,9 @@
       "risk_statement": "Assets outside the register are outside patching, monitoring and backup scope, and cannot be protected or recovered.",
       "corrective_action": "Move the register to the endpoint management platform as the source of truth, with monthly automated reconciliation against discovery and exception reporting.",
       "action_owner": "IT Asset Manager",
-      "due_date": "2026-09-25",
+      "due_date": "2026-09-26",
       "management_response": "Accepted, timescale agreed with management.",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "RSK-01": {
       "check_id": "RSK-01",
@@ -1157,7 +1157,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "RSK-02": {
       "check_id": "RSK-02",
@@ -1170,9 +1170,9 @@
       "risk_statement": "Deploying high-risk processing without a prior DPIA is a direct breach of UK GDPR Art. 35 and removes the opportunity to design in mitigations before go-live.",
       "corrective_action": "Make DPIA completion and DPO sign-off a mandatory stage gate in the project and procurement lifecycle, with the CAB unable to approve go-live without it.",
       "action_owner": "Data Protection Officer",
-      "due_date": "2026-09-25",
+      "due_date": "2026-09-26",
       "management_response": "Accepted, timescale agreed with management.",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "RSK-03": {
       "check_id": "RSK-03",
@@ -1187,7 +1187,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "RSK-04": {
       "check_id": "RSK-04",
@@ -1202,7 +1202,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "IAM-01": {
       "check_id": "IAM-01",
@@ -1215,9 +1215,9 @@
       "risk_statement": "Active credentials held by former staff allow unauthorised access to special category health data. Post-termination logons already evidenced constitute a reportable personal data breach exposure under UK GDPR Art. 33.",
       "corrective_action": "Automate leaver de-provisioning from the HR system to Active Directory. As an interim control, implement a monthly reconciliation of the HR leaver report against enabled accounts, with exceptions reported to the IG committee. Investigate the two post-termination logons as potential incidents.",
       "action_owner": "Head of IT Operations / HR Director",
-      "due_date": "2026-08-03",
+      "due_date": "2026-08-04",
       "management_response": "Accepted.",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "IAM-02": {
       "check_id": "IAM-02",
@@ -1230,9 +1230,9 @@
       "risk_statement": "Excessive and unattributable administrative access increases the blast radius of a compromised credential and prevents attribution during investigation.",
       "corrective_action": "Reduce privileged accounts to named individuals with a documented justification, disable dormant accounts, and place remaining service accounts under managed vault credentials. Reinstate quarterly review with a named deputy reviewer.",
       "action_owner": "Infrastructure Manager",
-      "due_date": "2026-08-26",
+      "due_date": "2026-08-27",
       "management_response": "Accepted, timescale agreed with management.",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "IAM-03": {
       "check_id": "IAM-03",
@@ -1247,7 +1247,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "IAM-04": {
       "check_id": "IAM-04",
@@ -1262,7 +1262,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "IAM-05": {
       "check_id": "IAM-05",
@@ -1277,7 +1277,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "DPR-01": {
       "check_id": "DPR-01",
@@ -1292,7 +1292,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "DPR-02": {
       "check_id": "DPR-02",
@@ -1307,7 +1307,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "DPR-03": {
       "check_id": "DPR-03",
@@ -1320,9 +1320,9 @@
       "risk_statement": "Late responses without a notified extension breach UK GDPR Art. 12(3) and are a common trigger for ICO complaints.",
       "corrective_action": "Introduce automated escalation at day 21, cross-train a second officer, and report open SAR aging to the IG committee monthly.",
       "action_owner": "Head of Information Governance",
-      "due_date": "2026-09-25",
+      "due_date": "2026-09-26",
       "management_response": "Accepted, timescale agreed with management.",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "DPR-04": {
       "check_id": "DPR-04",
@@ -1337,7 +1337,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "NET-01": {
       "check_id": "NET-01",
@@ -1352,7 +1352,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "NET-02": {
       "check_id": "NET-02",
@@ -1365,9 +1365,9 @@
       "risk_statement": "Lateral movement from a compromised corporate endpoint to connected medical devices could affect device availability and, in some device classes, patient safety.",
       "corrective_action": "Apply default-deny inter-VLAN policy with explicit allow rules for clinically required flows. Re-test segmentation after change and at least annually. Refresh the network diagram and place it under change control.",
       "action_owner": "Network Manager",
-      "due_date": "2026-08-26",
+      "due_date": "2026-08-27",
       "management_response": "Accepted, timescale agreed with management.",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "NET-03": {
       "check_id": "NET-03",
@@ -1382,7 +1382,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "NET-04": {
       "check_id": "NET-04",
@@ -1397,7 +1397,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "END-01": {
       "check_id": "END-01",
@@ -1412,7 +1412,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "END-02": {
       "check_id": "END-02",
@@ -1427,7 +1427,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "END-03": {
       "check_id": "END-03",
@@ -1442,7 +1442,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "END-04": {
       "check_id": "END-04",
@@ -1455,9 +1455,9 @@
       "risk_statement": "Unmanaged connected devices with default credentials provide a persistent foothold on the clinical network and, for some device classes, present a patient safety risk.",
       "corrective_action": "Include IT security sign-off as a mandatory step in medical device procurement. Reconcile the inventory to discovery quarterly. Change default credentials on the devices identified and obtain manufacturer patch positions for unsupported devices.",
       "action_owner": "Head of Medical Physics / IT Security Manager",
-      "due_date": "2026-09-25",
+      "due_date": "2026-09-26",
       "management_response": "Accepted, timescale agreed with management.",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "END-05": {
       "check_id": "END-05",
@@ -1472,7 +1472,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "VUL-01": {
       "check_id": "VUL-01",
@@ -1487,7 +1487,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "VUL-02": {
       "check_id": "VUL-02",
@@ -1500,9 +1500,9 @@
       "risk_statement": "Exploitation of known vulnerabilities on internet-facing infrastructure is the most common initial access vector in healthcare ransomware incidents. Failure also breaches Cyber Essentials certification conditions.",
       "corrective_action": "Define and approve an emergency patching procedure for actively exploited vulnerabilities with a 72-hour target. Remediate the three internet-facing systems immediately. Report SLA compliance monthly to the IG committee.",
       "action_owner": "Head of IT Operations",
-      "due_date": "2026-08-03",
+      "due_date": "2026-08-04",
       "management_response": "Accepted.",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "VUL-03": {
       "check_id": "VUL-03",
@@ -1515,9 +1515,9 @@
       "risk_statement": "Unsupported platforms receive no security updates and cannot be brought into a defensible position. Compromise of the PACS gateway would disrupt diagnostic imaging and expose patient images.",
       "corrective_action": "Produce a dated decommissioning plan for all end-of-life hosts. Where migration cannot complete within 90 days, isolate the hosts to a restricted VLAN with explicit allow rules and obtain formal risk acceptance from the SIRO.",
       "action_owner": "IT Director",
-      "due_date": "2026-08-26",
+      "due_date": "2026-08-27",
       "management_response": "Accepted.",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "VUL-04": {
       "check_id": "VUL-04",
@@ -1532,7 +1532,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "CHG-01": {
       "check_id": "CHG-01",
@@ -1547,7 +1547,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "CHG-02": {
       "check_id": "CHG-02",
@@ -1562,7 +1562,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "CHG-03": {
       "check_id": "CHG-03",
@@ -1575,9 +1575,9 @@
       "risk_statement": "Patient data is processed in an environment with weaker access control and no clinical justification, contrary to the purpose limitation and security principles. A compromise of UAT would be a reportable breach of the full patient record.",
       "corrective_action": "Implement pseudonymisation on refresh to non-production, or restrict UAT access to the same population as production pending that capability. Document and approve the process through the DPO.",
       "action_owner": "EHR System Owner / DPO",
-      "due_date": "2026-08-03",
+      "due_date": "2026-08-04",
       "management_response": "Accepted.",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "CHG-04": {
       "check_id": "CHG-04",
@@ -1592,7 +1592,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "LOG-01": {
       "check_id": "LOG-01",
@@ -1607,7 +1607,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "LOG-02": {
       "check_id": "LOG-02",
@@ -1620,9 +1620,9 @@
       "risk_statement": "Inappropriate access to patient records goes undetected. This is a recurring theme in ICO enforcement against healthcare providers and undermines the confidentiality obligation under UK GDPR Art. 5(1)(f).",
       "corrective_action": "Assign ownership of clinical audit review to the IG team. Implement monthly proactive audit covering self, same-surname and VIP access, with exceptions investigated under the disciplinary process. Review the 3 instances identified during fieldwork.",
       "action_owner": "Head of Information Governance",
-      "due_date": "2026-08-26",
+      "due_date": "2026-08-27",
       "management_response": "Accepted.",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "LOG-03": {
       "check_id": "LOG-03",
@@ -1637,7 +1637,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "LOG-04": {
       "check_id": "LOG-04",
@@ -1650,9 +1650,9 @@
       "risk_statement": "Inconsistent timestamps complicate correlation of events across systems during investigation and can undermine evidential reliability.",
       "corrective_action": "Add NTP source to the network device build standard and correct the two appliances.",
       "action_owner": "Network Manager",
-      "due_date": "2026-10-25",
+      "due_date": "2026-10-26",
       "management_response": "Accepted, timescale agreed with management.",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "BCP-01": {
       "check_id": "BCP-01",
@@ -1667,7 +1667,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "BCP-02": {
       "check_id": "BCP-02",
@@ -1680,9 +1680,9 @@
       "risk_statement": "In a ransomware scenario the organisation cannot demonstrate that clinical systems can be recovered within the stated RTO. Unvalidated backups are a recurring cause of extended clinical downtime.",
       "corrective_action": "Perform a full restore test of the EHR and PACS to an isolated environment within 60 days, measure actual recovery time against RTO, and repeat at least annually. Report the result to the board.",
       "action_owner": "Infrastructure Manager",
-      "due_date": "2026-08-03",
+      "due_date": "2026-08-04",
       "management_response": "Accepted.",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "BCP-03": {
       "check_id": "BCP-03",
@@ -1697,7 +1697,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "BCP-04": {
       "check_id": "BCP-04",
@@ -1712,7 +1712,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "TPR-01": {
       "check_id": "TPR-01",
@@ -1725,9 +1725,9 @@
       "risk_statement": "Without Art. 28 terms the organisation cannot demonstrate that processors are bound to appropriate security, sub-processor and breach notification obligations, and remains liable as controller.",
       "corrective_action": "Execute data processing agreements with both suppliers or cease the processing. Reassign ownership of the prior-year action and report closure to the audit committee.",
       "action_owner": "Head of Procurement / DPO",
-      "due_date": "2026-06-16",
+      "due_date": "2026-06-17",
       "management_response": "Accepted, timescale agreed with management.",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "TPR-02": {
       "check_id": "TPR-02",
@@ -1742,7 +1742,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "TPR-03": {
       "check_id": "TPR-03",
@@ -1755,9 +1755,9 @@
       "risk_statement": "Standing, unattributed supplier access is a well-documented initial access route in healthcare supply chain incidents and limits the ability to attribute activity.",
       "corrective_action": "Apply a supplier access standard: MFA mandatory, accounts disabled by default and enabled per approved session, maximum 12-month expiry, quarterly review by the contract owner.",
       "action_owner": "Head of IT Operations",
-      "due_date": "2026-08-26",
+      "due_date": "2026-08-27",
       "management_response": "Accepted, timescale agreed with management.",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "TPR-04": {
       "check_id": "TPR-04",
@@ -1772,7 +1772,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "IRM-01": {
       "check_id": "IRM-01",
@@ -1785,9 +1785,9 @@
       "risk_statement": "An untested plan and unclosed lessons reduce the effectiveness of response at the point of a real incident, extending clinical downtime.",
       "corrective_action": "Run a ransomware tabletop covering clinical downtime and board communications within 90 days, involving clinical leadership. Close the four outstanding actions and schedule exercising annually in the assurance calendar.",
       "action_owner": "IT Security Manager",
-      "due_date": "2026-09-25",
+      "due_date": "2026-09-26",
       "management_response": "Accepted, timescale agreed with management.",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "IRM-02": {
       "check_id": "IRM-02",
@@ -1802,7 +1802,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "IRM-03": {
       "check_id": "IRM-03",
@@ -1817,7 +1817,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "IRM-04": {
       "check_id": "IRM-04",
@@ -1845,9 +1845,9 @@
       "risk_statement": "Unauthorised physical access to network infrastructure bypasses logical controls entirely and would not be detected.",
       "corrective_action": "Remove the 5 invalid holders immediately. Bring comms room access into the six-monthly access review cycle and the leaver checklist.",
       "action_owner": "Facilities Manager / Infrastructure Manager",
-      "due_date": "2026-08-26",
+      "due_date": "2026-08-27",
       "management_response": "Accepted, timescale agreed with management.",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "PHY-02": {
       "check_id": "PHY-02",
@@ -1862,7 +1862,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "PHY-03": {
       "check_id": "PHY-03",
@@ -1877,7 +1877,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "PHY-04": {
       "check_id": "PHY-04",
@@ -1892,7 +1892,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "AWR-01": {
       "check_id": "AWR-01",
@@ -1905,9 +1905,9 @@
       "risk_statement": "The organisation does not meet the DSPT training standard, which affects the toolkit submission. Untrained staff are materially more likely to fall to phishing.",
       "corrective_action": "Escalate non-completion to line managers at 30 days and to executive leads at 60 days. Link completion to the appraisal process. Report completion rates by staff group monthly to the IG committee.",
       "action_owner": "Head of Information Governance / L&D",
-      "due_date": "2026-09-25",
+      "due_date": "2026-09-26",
       "management_response": "Accepted, timescale agreed with management.",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "AWR-02": {
       "check_id": "AWR-02",
@@ -1922,7 +1922,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "AWR-03": {
       "check_id": "AWR-03",
@@ -1937,7 +1937,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     },
     "AWR-04": {
       "check_id": "AWR-04",
@@ -1952,7 +1952,7 @@
       "action_owner": "",
       "due_date": "",
       "management_response": "",
-      "tested_on": "2026-07-27"
+      "tested_on": "2026-07-28"
     }
   }
 }

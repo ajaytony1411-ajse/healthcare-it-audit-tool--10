@@ -380,6 +380,146 @@ Senior Information Risk Owner.
     return out_path
 
 
+def _md(text) -> str:
+    """Escape pipes and newlines so free text survives inside a Markdown table cell."""
+    return str(text or "").replace("|", "\\|").replace("\n", " ").strip()
+
+
+def render_markdown(audit: Audit, out_path: str | Path) -> Path:
+    """The same report as Markdown, for viewing anywhere that renders it (e.g. GitHub)."""
+    o = audit.overall()
+    fw = audit.framework
+    findings = audit.findings()
+    overdue_ids = {r["check"]["id"] for r in audit.overdue_actions()}
+    report_date = audit.report_date or date.today().isoformat()
+    score = f"{o['score']}%" if o["score"] is not None else "n/a"
+
+    m: list[str] = []
+    m.append(f"# IT & Information Security Audit — {audit.entity}\n")
+    m.append(f"*{fw['framework_name']} v{fw['version']} · Reference {audit.audit_ref}*\n")
+    m.append("> **Internal audit report — confidential.** This is a worked example against a "
+             "fictional auditee, produced by [`audit.py`](../audit.py) to show the tool's output.\n")
+
+    m.append("| | |\n|---|---|")
+    for label, value in [("Auditee / site", audit.site), ("Report date", report_date),
+                         ("Lead auditor", audit.lead_auditor),
+                         ("Audit period", f"{audit.period_start} to {audit.period_end}"),
+                         ("Controls in programme", o["total"]),
+                         ("Controls tested", o["tested"])]:
+        m.append(f"| **{label}** | {_md(value)} |")
+
+    # --- executive summary ---
+    c = o["counts"]
+    sev = o["findings_by_severity"]
+    m.append("\n## 1. Executive Summary\n")
+    m.append("| Compliance score | Findings raised | Critical / High | Risk exposure |")
+    m.append("|---|---|---|---|")
+    m.append(f"| **{score}** ({o['rating']} assurance) | **{len(findings)}** "
+             f"({c['non_compliant']} failed, {c['partial']} partial) | "
+             f"**{sev['critical']} / {sev['high']}** | **{o['risk']}** weighted |")
+    m.append(f"\n**Audit opinion.** {o['opinion']}\n")
+
+    if findings:
+        m.append("### Key matters for management attention\n")
+        for n, row in enumerate(findings[:5], 1):
+            m.append(f"{n}. **{row['check']['id']} — "
+                     f"{row['check']['title']}.** {_md(row['result'].observation)}")
+        m.append("")
+
+    # --- scope ---
+    m.append("## 2. Scope, Objective & Methodology\n")
+    m.append(f"{fw.get('scope_statement','')}\n")
+    if audit.scope_notes:
+        m.append(f"{audit.scope_notes}\n")
+    m.append("Testing was performed through enquiry of responsible officers, observation of "
+             "processes in operation, inspection of system configuration and documentary "
+             "evidence, and re-performance of selected control activities on a sample basis. "
+             "Controls were assessed against:\n")
+    for f in fw.get("primary_frameworks", []):
+        m.append(f"- {f}")
+    m.append("\nEach control is rated **Compliant**, **Partially compliant**, **Non-compliant** "
+             "or **Not applicable**. The compliance score is (compliant + 0.5 × partial) ÷ "
+             "controls assessed. Findings take the severity of the underlying control where it "
+             "was absent, and one level below where it exists but operates with gaps. "
+             "Remediation deadlines follow finding severity: "
+             + ", ".join(f"{k} {v} days" for k, v in fw.get("severity_sla_days", {}).items())
+             + ".\n")
+
+    # --- domain results ---
+    m.append("## 3. Results by Control Domain\n")
+    m.append("| Ref | Control domain | Tested | Pass | Partial | Fail | Score | Assurance |")
+    m.append("|---|---|---|---|---|---|---|---|")
+    for section in fw["sections"]:
+        s = audit.section_stats(section)
+        sc = f"{s['score']}%" if s["score"] is not None else "–"
+        m.append(f"| **{s['id']}** | {_md(s['title'])} | {s['assessed']}/{s['total']} | "
+                 f"{s['counts']['compliant']} | {s['counts']['partial']} | "
+                 f"{s['counts']['non_compliant']} | {sc} | {s['rating']} |")
+
+    # --- findings ---
+    m.append("\n## 4. Findings & Recommendations\n")
+    if not findings:
+        m.append("No exceptions were identified in the controls tested.\n")
+    for i, row in enumerate(findings, 1):
+        check, res, section = row["check"], row["result"], row["section"]
+        due = res.due_date + (" — **OVERDUE**" if check["id"] in overdue_ids else "")
+        m.append(f"### Finding {i:02d} · {check['id']} — {check['title']}\n")
+        m.append(f"`{row['severity'].upper()}` · **{STATUSES[res.status]}** · "
+                 f"{section['id']} – {section['title']}\n")
+        m.append("| | |\n|---|---|")
+        rows = [("Control objective", check["control_objective"]),
+                ("Test performed", check["test_procedure"]),
+                ("Sample", res.sample_size), ("Observation", res.observation),
+                ("Root cause", res.root_cause), ("Risk / impact", res.risk_statement),
+                ("Recommendation", res.corrective_action),
+                ("Management response", res.management_response),
+                ("Owner", res.action_owner), ("Target date", due),
+                ("Evidence ref", res.evidence_ref)]
+        for label, value in rows:
+            if str(value or "").strip():
+                m.append(f"| **{label}** | {_md(value)} |")
+        maps = " · ".join(f"{k}: `{v}`" for k, v in check.get("mappings", {}).items() if v)
+        if maps:
+            m.append(f"\n<sub>{maps}</sub>\n")
+
+    # --- action plan ---
+    m.append("## 5. Corrective Action Plan\n")
+    if findings:
+        m.append("| Ref | Severity | Agreed action | Owner | Target date |")
+        m.append("|---|---|---|---|---|")
+        for row in findings:
+            check, res = row["check"], row["result"]
+            due = res.due_date + (" ⚠" if check["id"] in overdue_ids else "")
+            m.append(f"| **{check['id']}** | {row['severity']} | {_md(res.corrective_action)} | "
+                     f"{_md(res.action_owner)} | {due} |")
+    else:
+        m.append("No corrective actions arising.\n")
+
+    # --- appendix ---
+    m.append("\n## Appendix A – Detailed Control Test Log\n")
+    m.append("| Ref | Control | Control severity | Result | Evidence ref |")
+    m.append("|---|---|---|---|---|")
+    for section in fw["sections"]:
+        m.append(f"| | **{section['id']} – {_md(section['title'])}** | | | |")
+        for check in section["checks"]:
+            res = audit.results.get(check["id"])
+            status = res.status if res else "not_tested"
+            m.append(f"| {check['id']} | {_md(check['title'])} | "
+                     f"{check.get('severity','medium')} | {STATUSES[status]} | "
+                     f"{_md(res.evidence_ref) if res else ''} |")
+
+    m.append(f"\n---\n\n<sub>Prepared by {_md(audit.lead_auditor)} · {_md(audit.entity)} · "
+             f"Report reference {audit.audit_ref}. This report is issued for the internal use of "
+             "management and the audit committee. It reflects the control environment observed "
+             "during the audit period and does not constitute a guarantee that all weaknesses "
+             "have been identified.</sub>\n")
+
+    out_path = Path(out_path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text("\n".join(m), encoding="utf-8")
+    return out_path
+
+
 def export_capa_csv(audit: Audit, out_path: str | Path) -> Path:
     """Action plan as CSV, for import into a GRC or issue tracker."""
     out_path = Path(out_path)

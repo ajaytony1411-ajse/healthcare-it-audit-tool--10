@@ -11,6 +11,11 @@ traced straight back to the clause it breaches.
 
 No dependencies — Python 3.10+ standard library only.
 
+### 📄 [Read the worked example report →](docs/EXAMPLE_REPORT.md)
+
+A complete engagement against a fictional auditee: 58 controls tested, 18 findings, scored
+by domain, with a full corrective action plan. That is the tool's actual output, not a mockup.
+
 ## Quick look
 
 Generate a fully worked example engagement (fictional auditee, 58 controls, 18 findings):
@@ -62,7 +67,8 @@ python audit.py report audit_ITA-202607-A1B2.json
 
 Produces a self-contained HTML report (print or save to PDF from the browser — it flattens
 to a light, ink-friendly layout when printed) plus a CSV action plan for import into a GRC
-platform or issue tracker.
+platform or issue tracker. Add `--markdown` for a Markdown copy as well, which is handy for
+pasting into a ticket, a wiki or a pull request.
 
 ## How it scores
 
@@ -136,12 +142,20 @@ a PCI DSS assessment or a supplier audit if you swap the JSON.
 |---|---|
 | `audit.py` | CLI — `new`, `fieldwork`, `status`, `report`, `demo` |
 | `engine.py` | Audit model, scoring, severity and SLA logic |
-| `report.py` | HTML report and CSV action plan rendering |
+| `report.py` | HTML, Markdown and CSV rendering |
 | `demo_data.py` | The worked example engagement |
 | `checklists/healthcare_it_grc.json` | The control programme |
+| `docs/EXAMPLE_REPORT.md` | The worked example, rendered |
 
 ## Note
 
 The findings in the demo are illustrative and the auditee is fictional. The control
 programme is a starting point for a real engagement, not a substitute for scoping the audit
 against the organisation in front of you.
+
+Live audit working files (`audit_*.json`) and issued reports are gitignored — they hold real
+auditee findings and should never reach a repository.
+
+## Licence
+
+MIT — see [LICENSE](LICENSE).

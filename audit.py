@@ -17,7 +17,7 @@ from datetime import date
 from pathlib import Path
 
 from engine import Audit, STATUSES, DOWNGRADE
-from report import render_html, export_capa_csv
+from report import render_html, render_markdown, export_capa_csv
 
 if hasattr(sys.stdout, "reconfigure"):          # keep box drawing readable on Windows
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -207,6 +207,9 @@ def cmd_report(args):
     _print_status(audit)
     print(f"\nReport      : {html_path.resolve()}")
     print(f"Action plan : {csv_path.resolve()}")
+    if args.markdown:
+        md_path = render_markdown(audit, Path(f"{stem}.md"))
+        print(f"Markdown    : {md_path.resolve()}")
     if not args.no_open:
         webbrowser.open(html_path.resolve().as_uri())
 
@@ -222,10 +225,13 @@ def cmd_demo(args):
     audit.save(work)
     html_path = render_html(audit, work.with_name(f"{work.stem}_report.html"))
     csv_path = export_capa_csv(audit, work.with_name(f"{work.stem}_action_plan.csv"))
+    # Markdown copy lives in docs/ so it renders directly on GitHub.
+    md_path = render_markdown(audit, HERE / "docs" / "EXAMPLE_REPORT.md")
     _print_status(audit)
     print(f"\nWorking file : {work.resolve()}")
     print(f"Report       : {html_path.resolve()}")
     print(f"Action plan  : {csv_path.resolve()}")
+    print(f"Markdown     : {md_path.resolve()}")
     if not args.no_open:
         webbrowser.open(html_path.resolve().as_uri())
 
@@ -257,6 +263,8 @@ def main():
     r.add_argument("audit")
     r.add_argument("--out", help="output stem (no extension)")
     r.add_argument("--report-date")
+    r.add_argument("--markdown", action="store_true",
+                   help="also write a Markdown copy of the report")
     r.add_argument("--no-open", action="store_true")
     r.set_defaults(func=cmd_report)
 

@@ -1,0 +1,532 @@
+# IT & Information Security Audit — Northgate Health Group
+
+*Healthcare IT & Information Security Audit Programme v1.0 · Reference ITA-202607-BE6B*
+
+> **Internal audit report — confidential.** This is a worked example against a fictional auditee, produced by [`audit.py`](../audit.py) to show the tool's output.
+
+| | |
+|---|---|
+| **Auditee / site** | Head office, 3 clinical sites and hosted data centre |
+| **Report date** | 2026-07-28 |
+| **Lead auditor** | A. Tony, Lead IT Auditor |
+| **Audit period** | 2025-07-01 to 2026-07-28 |
+| **Controls in programme** | 58 |
+| **Controls tested** | 57 |
+
+## 1. Executive Summary
+
+| Compliance score | Findings raised | Critical / High | Risk exposure |
+|---|---|---|---|
+| **78.6%** (Limited assurance) | **18** (6 failed, 12 partial) | **6 / 5** | **109.0** weighted |
+
+**Audit opinion.** Limited assurance at best. 6 finding(s) were rated critical; these expose patient data or clinical service continuity to material risk and require remediation ahead of the wider action plan.
+
+### Key matters for management attention
+
+1. **BCP-02 — Restore testing performed and evidenced.** No full restore test of the EHR has been performed since the platform migration 19 months ago. Testing is limited to individual file-level restores. The documented RTO of 4 hours has therefore never been validated.
+2. **CHG-03 — Use of live patient data in non-production.** The UAT instance of the EHR contains a full copy of live patient data refreshed monthly, including names, NHS numbers and clinical notes. 34 users have access to UAT, of whom 9 have no clinical role. No masking process exists and no approval for the use of live data was found.
+3. **IAM-01 — Joiners, movers, leavers process effectiveness.** 20 leavers were sampled against HR termination records. 7 accounts (35%) remained enabled after the leave date, the longest for 94 days. Two of these accounts were used to authenticate to the EHR after the individual had left the organisation.
+4. **LOG-02 — Clinical record access auditing.** The EHR records record-level access, but no proactive audit of inappropriate access has been performed in the audit period. No alerting exists for self-lookup, same-surname or VIP record access. A sample query run during fieldwork identified 3 instances of staff accessing their own record.
+5. **VUL-02 — Patch deployment within defined SLA.** Of 20 critical and high vulnerabilities sampled, 13 exceeded the 14-day remediation SLA. Mean time to remediate for critical vulnerabilities was 47 days. Three internet-facing systems carried unpatched vulnerabilities with known public exploits at the time of testing.
+
+## 2. Scope, Objective & Methodology
+
+Audit of information technology general controls (ITGC) and information security controls supporting the delivery and administration of clinical care, including systems processing special category health data.
+
+Fieldwork covered central IT infrastructure, the electronic health record, PACS, the practice management system and supporting cloud services. Clinical practice, medical device efficacy and financial controls were outside scope. Forensic readiness testing (IRM-04) was deferred at management request and will be covered in the next cycle; this constitutes a scope limitation.
+
+Testing was performed through enquiry of responsible officers, observation of processes in operation, inspection of system configuration and documentary evidence, and re-performance of selected control activities on a sample basis. Controls were assessed against:
+
+- ISO/IEC 27001:2022 Annex A
+- NHS Data Security and Protection Toolkit (DSPT)
+- Cyber Essentials / Cyber Essentials Plus
+- UK GDPR & Data Protection Act 2018
+- NIS Regulations 2018 (where applicable)
+- HIPAA Security Rule 45 CFR 164 (cross-reference for US-linked entities)
+
+Each control is rated **Compliant**, **Partially compliant**, **Non-compliant** or **Not applicable**. The compliance score is (compliant + 0.5 × partial) ÷ controls assessed. Findings take the severity of the underlying control where it was absent, and one level below where it exists but operates with gaps. Remediation deadlines follow finding severity: critical 7 days, high 30 days, medium 60 days, low 90 days.
+
+## 3. Results by Control Domain
+
+| Ref | Control domain | Tested | Pass | Partial | Fail | Score | Assurance |
+|---|---|---|---|---|---|---|---|
+| **ISG** | Information Security Governance & Policy | 4/4 | 3 | 1 | 0 | 87.5% | Reasonable |
+| **RSK** | Risk Management & Compliance Assurance | 3/4 | 2 | 1 | 0 | 83.3% | Reasonable |
+| **IAM** | Identity & Access Management | 5/5 | 3 | 1 | 1 | 70.0% | Limited |
+| **DPR** | Data Protection & Privacy | 4/4 | 3 | 1 | 0 | 87.5% | Reasonable |
+| **NET** | Network & Infrastructure Security | 4/4 | 3 | 1 | 0 | 87.5% | Reasonable |
+| **END** | Endpoint, Mobile & Connected Medical Device Security | 5/5 | 4 | 1 | 0 | 90.0% | Reasonable |
+| **VUL** | Vulnerability & Patch Management | 4/4 | 2 | 0 | 2 | 50.0% | No assurance |
+| **CHG** | Change & Development Management | 4/4 | 3 | 0 | 1 | 75.0% | Limited |
+| **LOG** | Logging, Monitoring & Detection | 4/4 | 2 | 1 | 1 | 62.5% | Limited |
+| **BCP** | Backup, Resilience & Disaster Recovery | 4/4 | 3 | 0 | 1 | 75.0% | Limited |
+| **TPR** | Third Party & Supplier Assurance | 4/4 | 2 | 2 | 0 | 75.0% | Limited |
+| **IRM** | Incident Response & Breach Notification | 3/4 | 2 | 1 | 0 | 83.3% | Reasonable |
+| **PHY** | Physical & Environmental Security | 4/4 | 3 | 1 | 0 | 87.5% | Reasonable |
+| **AWR** | People, Training & Security Culture | 4/4 | 3 | 1 | 0 | 87.5% | Reasonable |
+
+## 4. Findings & Recommendations
+
+### Finding 01 · BCP-02 — Restore testing performed and evidenced
+
+`CRITICAL` · **Non-compliant** · BCP – Backup, Resilience & Disaster Recovery
+
+| | |
+|---|---|
+| **Control objective** | Full restore tests of critical clinical systems are performed at least annually and meet the defined RTO/RPO. |
+| **Test performed** | Inspect the most recent restore test report. Compare actual restore time against documented RTO. Confirm data integrity validation was performed. |
+| **Sample** | Backup test records, 19 months |
+| **Observation** | No full restore test of the EHR has been performed since the platform migration 19 months ago. Testing is limited to individual file-level restores. The documented RTO of 4 hours has therefore never been validated. |
+| **Root cause** | Restore testing requires an isolated recovery environment that has not been funded. |
+| **Risk / impact** | In a ransomware scenario the organisation cannot demonstrate that clinical systems can be recovered within the stated RTO. Unvalidated backups are a recurring cause of extended clinical downtime. |
+| **Recommendation** | Perform a full restore test of the EHR and PACS to an isolated environment within 60 days, measure actual recovery time against RTO, and repeat at least annually. Report the result to the board. |
+| **Management response** | Accepted. |
+| **Owner** | Infrastructure Manager |
+| **Target date** | 2026-08-04 |
+| **Evidence ref** | WP-BCP-02 |
+
+<sub>iso27001: `A.8.13, A.5.30` · dspt: `Assertion 7.2` · hipaa_security: `164.308(a)(7)(ii)(D)`</sub>
+
+### Finding 02 · CHG-03 — Use of live patient data in non-production
+
+`CRITICAL` · **Non-compliant** · CHG – Change & Development Management
+
+| | |
+|---|---|
+| **Control objective** | Live patient data is not used for testing unless anonymised/pseudonymised under an approved, documented process. |
+| **Test performed** | Query non-production databases for identifiable patient fields. Inspect the data masking process and any approvals for live data use. |
+| **Sample** | UAT database sampling, 34 users |
+| **Observation** | The UAT instance of the EHR contains a full copy of live patient data refreshed monthly, including names, NHS numbers and clinical notes. 34 users have access to UAT, of whom 9 have no clinical role. No masking process exists and no approval for the use of live data was found. |
+| **Root cause** | The test refresh process was inherited from the previous supplier's implementation and has never been reviewed against data protection requirements. |
+| **Risk / impact** | Patient data is processed in an environment with weaker access control and no clinical justification, contrary to the purpose limitation and security principles. A compromise of UAT would be a reportable breach of the full patient record. |
+| **Recommendation** | Implement pseudonymisation on refresh to non-production, or restrict UAT access to the same population as production pending that capability. Document and approve the process through the DPO. |
+| **Management response** | Accepted. |
+| **Owner** | EHR System Owner / DPO |
+| **Target date** | 2026-08-04 |
+| **Evidence ref** | WP-CHG-03 |
+
+<sub>iso27001: `A.8.33` · uk_gdpr: `Art. 5(1)(b), Art. 32`</sub>
+
+### Finding 03 · IAM-01 — Joiners, movers, leavers process effectiveness
+
+`CRITICAL` · **Non-compliant** · IAM – Identity & Access Management
+
+| | |
+|---|---|
+| **Control objective** | Access is provisioned on documented authorisation and revoked within one working day of termination. |
+| **Test performed** | Sample 20 leavers from HR records in the period. Confirm account disablement date in AD/EHR against termination date. Sample 15 joiners for approval evidence. |
+| **Sample** | 20 of 143 leavers |
+| **Observation** | 20 leavers were sampled against HR termination records. 7 accounts (35%) remained enabled after the leave date, the longest for 94 days. Two of these accounts were used to authenticate to the EHR after the individual had left the organisation. |
+| **Root cause** | Leaver notification is a manual email from HR to the service desk with no ticket raised, no SLA and no reconciliation between HR records and Active Directory. |
+| **Risk / impact** | Active credentials held by former staff allow unauthorised access to special category health data. Post-termination logons already evidenced constitute a reportable personal data breach exposure under UK GDPR Art. 33. |
+| **Recommendation** | Automate leaver de-provisioning from the HR system to Active Directory. As an interim control, implement a monthly reconciliation of the HR leaver report against enabled accounts, with exceptions reported to the IG committee. Investigate the two post-termination logons as potential incidents. |
+| **Management response** | Accepted. |
+| **Owner** | Head of IT Operations / HR Director |
+| **Target date** | 2026-08-04 |
+| **Evidence ref** | WP-IAM-01 |
+
+<sub>iso27001: `A.5.16, A.5.18, A.6.5` · dspt: `Assertion 4.2` · hipaa_security: `164.308(a)(3)(ii)(C)`</sub>
+
+### Finding 04 · LOG-02 — Clinical record access auditing
+
+`CRITICAL` · **Non-compliant** · LOG – Logging, Monitoring & Detection
+
+| | |
+|---|---|
+| **Control objective** | Access to patient records is logged at record level and proactively audited for inappropriate access (e.g. self, family, VIP lookups). |
+| **Test performed** | Inspect the EHR audit log configuration. Obtain evidence of proactive audits performed in the period and outcomes of any alerts raised. |
+| **Sample** | 12 months of EHR audit data |
+| **Observation** | The EHR records record-level access, but no proactive audit of inappropriate access has been performed in the audit period. No alerting exists for self-lookup, same-surname or VIP record access. A sample query run during fieldwork identified 3 instances of staff accessing their own record. |
+| **Root cause** | Ownership of clinical record access auditing is not assigned; IG assumes IT performs it, IT assumes IG performs it. |
+| **Risk / impact** | Inappropriate access to patient records goes undetected. This is a recurring theme in ICO enforcement against healthcare providers and undermines the confidentiality obligation under UK GDPR Art. 5(1)(f). |
+| **Recommendation** | Assign ownership of clinical audit review to the IG team. Implement monthly proactive audit covering self, same-surname and VIP access, with exceptions investigated under the disciplinary process. Review the 3 instances identified during fieldwork. |
+| **Management response** | Accepted. |
+| **Owner** | Head of Information Governance |
+| **Target date** | 2026-08-27 |
+| **Evidence ref** | WP-LOG-02 |
+
+<sub>iso27001: `A.8.15` · dspt: `Assertion 4.5` · uk_gdpr: `Art. 5(1)(f)` · hipaa_security: `164.308(a)(1)(ii)(D)`</sub>
+
+### Finding 05 · VUL-02 — Patch deployment within defined SLA
+
+`CRITICAL` · **Non-compliant** · VUL – Vulnerability & Patch Management
+
+| | |
+|---|---|
+| **Control objective** | Critical and high-severity patches are deployed within 14 days of vendor release (Cyber Essentials requires 14 days for critical). |
+| **Test performed** | Select 20 critical/high vulnerabilities from the scan data. Calculate days from vendor release to remediation. Report SLA breach rate. |
+| **Sample** | 20 of 486 critical/high findings |
+| **Observation** | Of 20 critical and high vulnerabilities sampled, 13 exceeded the 14-day remediation SLA. Mean time to remediate for critical vulnerabilities was 47 days. Three internet-facing systems carried unpatched vulnerabilities with known public exploits at the time of testing. |
+| **Root cause** | Patching windows for clinical systems require clinical sign-off that is only sought monthly, and there is no emergency patching route for actively exploited vulnerabilities. |
+| **Risk / impact** | Exploitation of known vulnerabilities on internet-facing infrastructure is the most common initial access vector in healthcare ransomware incidents. Failure also breaches Cyber Essentials certification conditions. |
+| **Recommendation** | Define and approve an emergency patching procedure for actively exploited vulnerabilities with a 72-hour target. Remediate the three internet-facing systems immediately. Report SLA compliance monthly to the IG committee. |
+| **Management response** | Accepted. |
+| **Owner** | Head of IT Operations |
+| **Target date** | 2026-08-04 |
+| **Evidence ref** | WP-VUL-02 |
+
+<sub>iso27001: `A.8.8` · dspt: `Assertion 9.4` · cyber_essentials: `Security Update Management`</sub>
+
+### Finding 06 · VUL-03 — Unsupported / end-of-life systems
+
+`CRITICAL` · **Non-compliant** · VUL – Vulnerability & Patch Management
+
+| | |
+|---|---|
+| **Control objective** | No unsupported operating system or application processes patient data without an extended support agreement and documented compensating controls. |
+| **Test performed** | Query the asset register and scan data for EOL platforms. For each, inspect the risk acceptance, expiry date and compensating controls. |
+| **Sample** | Full asset register (612 hosts) |
+| **Observation** | 14 Windows Server 2012 R2 hosts and 2 Windows 10 21H2 endpoints remain in service, including the radiology PACS gateway. No extended security updates are purchased and no risk acceptance has been formally approved. |
+| **Root cause** | Replacement of the PACS gateway is dependent on a supplier upgrade that has been deferred twice; no compensating controls were implemented while the deferral ran. |
+| **Risk / impact** | Unsupported platforms receive no security updates and cannot be brought into a defensible position. Compromise of the PACS gateway would disrupt diagnostic imaging and expose patient images. |
+| **Recommendation** | Produce a dated decommissioning plan for all end-of-life hosts. Where migration cannot complete within 90 days, isolate the hosts to a restricted VLAN with explicit allow rules and obtain formal risk acceptance from the SIRO. |
+| **Management response** | Accepted. |
+| **Owner** | IT Director |
+| **Target date** | 2026-08-27 |
+| **Evidence ref** | WP-VUL-03 |
+
+<sub>iso27001: `A.8.8` · dspt: `Assertion 6.2` · cyber_essentials: `Security Update Management`</sub>
+
+### Finding 07 · END-04 — Connected medical device (IoMT) risk control
+
+`HIGH` · **Partially compliant** · END – Endpoint, Mobile & Connected Medical Device Security
+
+| | |
+|---|---|
+| **Control objective** | Networked medical devices are inventoried, risk-assessed, patched per manufacturer guidance, and covered by a supplier support agreement. |
+| **Test performed** | Obtain the medical device inventory. Sample 8 networked devices and test for: OS support status, default credential change, network placement, and manufacturer patch position. |
+| **Sample** | 8 of 218 registered devices |
+| **Observation** | The medical device inventory holds 218 networked devices but is not reconciled to network discovery, which identified 27 further devices. Of 8 devices sampled, 3 ran unsupported operating systems and 2 retained default administrative credentials. |
+| **Root cause** | Medical devices are procured by clinical departments without IT involvement, so they do not enter the IT asset or vulnerability management processes. |
+| **Risk / impact** | Unmanaged connected devices with default credentials provide a persistent foothold on the clinical network and, for some device classes, present a patient safety risk. |
+| **Recommendation** | Include IT security sign-off as a mandatory step in medical device procurement. Reconcile the inventory to discovery quarterly. Change default credentials on the devices identified and obtain manufacturer patch positions for unsupported devices. |
+| **Management response** | Accepted, timescale agreed with management. |
+| **Owner** | Head of Medical Physics / IT Security Manager |
+| **Target date** | 2026-09-26 |
+| **Evidence ref** | WP-END-04 |
+
+<sub>iso27001: `A.8.9, A.5.9` · dspt: `Assertion 6.3` · hipaa_security: `164.310(c)`</sub>
+
+### Finding 08 · IAM-02 — Privileged account governance
+
+`HIGH` · **Partially compliant** · IAM – Identity & Access Management
+
+| | |
+|---|---|
+| **Control objective** | Administrative accounts are individually assigned, separate from standard accounts, MFA-protected and reviewed quarterly. |
+| **Test performed** | Export all members of privileged groups. Test each for named ownership, MFA enrolment, and business justification. Confirm evidence of the last quarterly review. |
+| **Sample** | 31 privileged accounts (full population) |
+| **Observation** | 31 accounts hold Domain Admin or equivalent privilege. 9 are shared or service accounts without a named owner, and 4 have not been used in over 180 days. Quarterly privileged access reviews were evidenced for Q1 and Q2 only; Q3 and Q4 were not performed. |
+| **Root cause** | No privileged access management tooling; reviews depend on the availability of a single infrastructure engineer with no deputy. |
+| **Risk / impact** | Excessive and unattributable administrative access increases the blast radius of a compromised credential and prevents attribution during investigation. |
+| **Recommendation** | Reduce privileged accounts to named individuals with a documented justification, disable dormant accounts, and place remaining service accounts under managed vault credentials. Reinstate quarterly review with a named deputy reviewer. |
+| **Management response** | Accepted, timescale agreed with management. |
+| **Owner** | Infrastructure Manager |
+| **Target date** | 2026-08-27 |
+| **Evidence ref** | WP-IAM-02 |
+
+<sub>iso27001: `A.8.2, A.5.18` · dspt: `Assertion 4.5` · hipaa_security: `164.308(a)(4)`</sub>
+
+### Finding 09 · NET-02 — Network segmentation of clinical and medical device VLANs
+
+`HIGH` · **Partially compliant** · NET – Network & Infrastructure Security
+
+| | |
+|---|---|
+| **Control objective** | Medical devices, clinical systems, guest Wi-Fi and corporate IT are segmented with enforced inter-VLAN access control. |
+| **Test performed** | Inspect the network diagram and VLAN/ACL configuration. Perform connectivity testing from the guest and corporate segments toward the medical device VLAN. |
+| **Sample** | 8 devices tested across 5 VLANs |
+| **Observation** | Medical device and corporate VLANs are separated, but ACL testing from the corporate segment reached 4 of 8 medical devices tested on management ports (SSH/HTTP). Guest Wi-Fi was correctly isolated. The network diagram was last updated 14 months ago and did not reflect two new VLANs. |
+| **Root cause** | Segmentation was implemented at project level without an enforced inter-VLAN policy baseline, and no periodic validation testing takes place. |
+| **Risk / impact** | Lateral movement from a compromised corporate endpoint to connected medical devices could affect device availability and, in some device classes, patient safety. |
+| **Recommendation** | Apply default-deny inter-VLAN policy with explicit allow rules for clinically required flows. Re-test segmentation after change and at least annually. Refresh the network diagram and place it under change control. |
+| **Management response** | Accepted, timescale agreed with management. |
+| **Owner** | Network Manager |
+| **Target date** | 2026-08-27 |
+| **Evidence ref** | WP-NET-02 |
+
+<sub>iso27001: `A.8.22` · dspt: `Assertion 9.5` · hipaa_security: `164.312(e)(1)`</sub>
+
+### Finding 10 · RSK-02 — DPIAs completed for high-risk processing
+
+`HIGH` · **Partially compliant** · RSK – Risk Management & Compliance Assurance
+
+| | |
+|---|---|
+| **Control objective** | A DPIA is completed and signed off before deployment of any system processing special category health data at scale. |
+| **Test performed** | Identify systems introduced in the audit period. For each, confirm a DPIA exists, was completed pre-go-live and was reviewed by the DPO. |
+| **Sample** | 4 systems deployed in period |
+| **Observation** | Four new systems processing patient data were deployed in the period. DPIAs exist for three; the patient messaging platform went live without one and the DPIA was completed retrospectively 5 months after go-live. Two DPIAs lack evidence of DPO review. |
+| **Root cause** | The DPIA trigger sits in the IG process but is not a mandatory gate in the project or procurement lifecycle, so it can be bypassed. |
+| **Risk / impact** | Deploying high-risk processing without a prior DPIA is a direct breach of UK GDPR Art. 35 and removes the opportunity to design in mitigations before go-live. |
+| **Recommendation** | Make DPIA completion and DPO sign-off a mandatory stage gate in the project and procurement lifecycle, with the CAB unable to approve go-live without it. |
+| **Management response** | Accepted, timescale agreed with management. |
+| **Owner** | Data Protection Officer |
+| **Target date** | 2026-09-26 |
+| **Evidence ref** | WP-RSK-02 |
+
+<sub>iso27001: `A.5.34` · dspt: `Assertion 3.4` · uk_gdpr: `Art. 35`</sub>
+
+### Finding 11 · TPR-03 — Third-party remote access control
+
+`HIGH` · **Partially compliant** · TPR – Third Party & Supplier Assurance
+
+| | |
+|---|---|
+| **Control objective** | Supplier remote access is time-bound, individually attributed, MFA-protected, approved per session and fully logged. |
+| **Test performed** | Identify all third-party accounts in the directory. Test for MFA, expiry dates and last logon. Sample 5 support sessions for approval and session recording. |
+| **Sample** | 21 third-party accounts (full population) |
+| **Observation** | 21 third-party support accounts were identified. 6 lack MFA, 11 have no expiry date set, and per-session approval is not required for 4 suppliers who hold standing access. Session logging is in place for all accounts. |
+| **Root cause** | Supplier access is provisioned ad hoc at contract start with no standard control baseline and no periodic review. |
+| **Risk / impact** | Standing, unattributed supplier access is a well-documented initial access route in healthcare supply chain incidents and limits the ability to attribute activity. |
+| **Recommendation** | Apply a supplier access standard: MFA mandatory, accounts disabled by default and enabled per approved session, maximum 12-month expiry, quarterly review by the contract owner. |
+| **Management response** | Accepted, timescale agreed with management. |
+| **Owner** | Head of IT Operations |
+| **Target date** | 2026-08-27 |
+| **Evidence ref** | WP-TPR-03 |
+
+<sub>iso27001: `A.5.21, A.8.5` · dspt: `Assertion 4.5`</sub>
+
+### Finding 12 · AWR-01 — Annual data security training completion
+
+`MEDIUM` · **Partially compliant** · AWR – People, Training & Security Culture
+
+| | |
+|---|---|
+| **Control objective** | At least 95% of staff, including contractors and board members, complete annual data security awareness training. |
+| **Test performed** | Obtain the LMS completion report. Calculate the completion rate against the current headcount. Test that non-completers have been escalated. |
+| **Sample** | LMS report, 1,240 staff |
+| **Observation** | Annual data security training completion was 87% against the 95% DSPT threshold. Completion among medical staff was 71% and among board members 60%. Non-completion is not escalated to line managers. |
+| **Root cause** | Training is assigned via the LMS but completion is not linked to appraisal or to system access, and no escalation route exists. |
+| **Risk / impact** | The organisation does not meet the DSPT training standard, which affects the toolkit submission. Untrained staff are materially more likely to fall to phishing. |
+| **Recommendation** | Escalate non-completion to line managers at 30 days and to executive leads at 60 days. Link completion to the appraisal process. Report completion rates by staff group monthly to the IG committee. |
+| **Management response** | Accepted, timescale agreed with management. |
+| **Owner** | Head of Information Governance / L&D |
+| **Target date** | 2026-09-26 |
+| **Evidence ref** | WP-AWR-01 |
+
+<sub>iso27001: `A.6.3` · dspt: `Assertion 3.1` · hipaa_security: `164.308(a)(5)`</sub>
+
+### Finding 13 · DPR-03 — Data subject rights fulfilment within statutory timescales
+
+`MEDIUM` · **Partially compliant** · DPR – Data Protection & Privacy
+
+| | |
+|---|---|
+| **Control objective** | SARs and other rights requests are logged and completed within one calendar month (or a documented extension). |
+| **Test performed** | Select 10 requests from the SAR log. Calculate elapsed days from receipt to response. Test for evidence of identity verification and redaction review. |
+| **Sample** | 10 of 63 SARs |
+| **Observation** | Of 10 subject access requests sampled, 8 were completed within one calendar month, 1 took 47 days with no extension notified, and 1 remained open at 62 days. Identity verification was evidenced in all cases. |
+| **Root cause** | SAR handling rests with a single IG officer with no cover during absence, and no escalation triggers when a request approaches 21 days. |
+| **Risk / impact** | Late responses without a notified extension breach UK GDPR Art. 12(3) and are a common trigger for ICO complaints. |
+| **Recommendation** | Introduce automated escalation at day 21, cross-train a second officer, and report open SAR aging to the IG committee monthly. |
+| **Management response** | Accepted, timescale agreed with management. |
+| **Owner** | Head of Information Governance |
+| **Target date** | 2026-09-26 |
+| **Evidence ref** | WP-DPR-03 |
+
+<sub>dspt: `Assertion 3.2` · uk_gdpr: `Art. 12(3), Art. 15`</sub>
+
+### Finding 14 · IRM-01 — Incident response plan tested
+
+`MEDIUM` · **Partially compliant** · IRM – Incident Response & Breach Notification
+
+| | |
+|---|---|
+| **Control objective** | A documented IR plan defines roles, severity criteria and escalation, and is exercised at least annually including a ransomware scenario. |
+| **Test performed** | Inspect the IR plan and the most recent tabletop exercise report. Verify actions from lessons learned were closed. |
+| **Sample** | IR plan and exercise records |
+| **Observation** | An incident response plan exists and was updated in the period. The last tabletop exercise was 22 months ago and did not cover a ransomware scenario. Four of six lessons learned from that exercise remain open. |
+| **Root cause** | Exercising is not scheduled in the assurance calendar and competes with operational priorities. |
+| **Risk / impact** | An untested plan and unclosed lessons reduce the effectiveness of response at the point of a real incident, extending clinical downtime. |
+| **Recommendation** | Run a ransomware tabletop covering clinical downtime and board communications within 90 days, involving clinical leadership. Close the four outstanding actions and schedule exercising annually in the assurance calendar. |
+| **Management response** | Accepted, timescale agreed with management. |
+| **Owner** | IT Security Manager |
+| **Target date** | 2026-09-26 |
+| **Evidence ref** | WP-IRM-01 |
+
+<sub>iso27001: `A.5.24, A.5.26` · dspt: `Assertion 8.1` · hipaa_security: `164.308(a)(6)`</sub>
+
+### Finding 15 · ISG-04 — Asset inventory completeness
+
+`MEDIUM` · **Partially compliant** · ISG – Information Security Governance & Policy
+
+| | |
+|---|---|
+| **Control objective** | A maintained inventory records all information assets and systems processing patient data, with named owners and criticality ratings. |
+| **Test performed** | Reconcile the asset register against network discovery output and the finance fixed-asset list. Investigate variances greater than 5%. |
+| **Sample** | Full register vs discovery scan |
+| **Observation** | The asset register records 612 hosts against 671 identified by network discovery, a variance of 8.8%. 43 entries have no named owner and criticality ratings are absent for all non-server assets. |
+| **Root cause** | The register is maintained manually in a spreadsheet and updated only at procurement, not at decommission or discovery. |
+| **Risk / impact** | Assets outside the register are outside patching, monitoring and backup scope, and cannot be protected or recovered. |
+| **Recommendation** | Move the register to the endpoint management platform as the source of truth, with monthly automated reconciliation against discovery and exception reporting. |
+| **Management response** | Accepted, timescale agreed with management. |
+| **Owner** | IT Asset Manager |
+| **Target date** | 2026-09-26 |
+| **Evidence ref** | WP-ISG-04 |
+
+<sub>iso27001: `A.5.9` · dspt: `Assertion 1.4` · hipaa_security: `164.310(d)(1)`</sub>
+
+### Finding 16 · PHY-01 — Data centre / comms room access control
+
+`MEDIUM` · **Partially compliant** · PHY – Physical & Environmental Security
+
+| | |
+|---|---|
+| **Control objective** | Access to server and comms rooms is restricted to authorised personnel, logged, and reviewed at least six-monthly. |
+| **Test performed** | Obtain the access control list for the comms room. Test each holder for continued business need. Inspect the access log for unexplained entries. |
+| **Sample** | 23 badge holders (full population) |
+| **Observation** | The comms room access list holds 23 people, of whom 5 have left the organisation or changed role. The last documented access review was 16 months ago. Access logs are retained but not reviewed. |
+| **Root cause** | The access list is owned by Facilities and is not linked to the leaver process or the IT access review cycle. |
+| **Risk / impact** | Unauthorised physical access to network infrastructure bypasses logical controls entirely and would not be detected. |
+| **Recommendation** | Remove the 5 invalid holders immediately. Bring comms room access into the six-monthly access review cycle and the leaver checklist. |
+| **Management response** | Accepted, timescale agreed with management. |
+| **Owner** | Facilities Manager / Infrastructure Manager |
+| **Target date** | 2026-08-27 |
+| **Evidence ref** | WP-PHY-01 |
+
+<sub>iso27001: `A.7.1, A.7.2` · dspt: `Assertion 4.5` · hipaa_security: `164.310(a)(1)`</sub>
+
+### Finding 17 · TPR-01 — Data processing agreements in place
+
+`MEDIUM` · **Partially compliant** · TPR – Third Party & Supplier Assurance
+
+| | |
+|---|---|
+| **Control objective** | Every processor handling patient data is bound by an Art. 28 compliant contract including security, sub-processor and breach notification terms. |
+| **Test performed** | Select 10 suppliers from the supplier register handling patient data. Inspect contracts for Art. 28(3) clauses. |
+| **Sample** | 10 of 84 suppliers |
+| **Observation** | Of 10 suppliers processing patient data, 8 hold Art. 28 compliant contracts. 2 operate under purchase-order terms only with no data processing clauses, one of which hosts patient-facing appointment data. This finding was raised in the prior year audit and remains open. |
+| **Root cause** | Contract remediation was assigned to procurement but no completion date was tracked after the original owner left the organisation. |
+| **Risk / impact** | Without Art. 28 terms the organisation cannot demonstrate that processors are bound to appropriate security, sub-processor and breach notification obligations, and remains liable as controller. |
+| **Recommendation** | Execute data processing agreements with both suppliers or cease the processing. Reassign ownership of the prior-year action and report closure to the audit committee. |
+| **Management response** | Accepted, timescale agreed with management. |
+| **Owner** | Head of Procurement / DPO |
+| **Target date** | 2026-06-17 — **OVERDUE** |
+| **Evidence ref** | WP-TPR-01 |
+
+<sub>iso27001: `A.5.19, A.5.20` · dspt: `Assertion 1.5` · uk_gdpr: `Art. 28`</sub>
+
+### Finding 18 · LOG-04 — Time synchronisation
+
+`LOW` · **Partially compliant** · LOG – Logging, Monitoring & Detection
+
+| | |
+|---|---|
+| **Control objective** | All systems synchronise to a common authoritative time source to preserve log integrity and forensic admissibility. |
+| **Test performed** | Sample 8 systems and compare configured NTP source and current clock drift. |
+| **Sample** | 8 systems sampled |
+| **Observation** | Of 8 systems sampled, 2 network appliances synchronise to an external NTP source rather than the internal authoritative source, with observed drift of up to 4 minutes. |
+| **Root cause** | Appliance builds were not covered by the standard NTP configuration baseline. |
+| **Risk / impact** | Inconsistent timestamps complicate correlation of events across systems during investigation and can undermine evidential reliability. |
+| **Recommendation** | Add NTP source to the network device build standard and correct the two appliances. |
+| **Management response** | Accepted, timescale agreed with management. |
+| **Owner** | Network Manager |
+| **Target date** | 2026-10-26 |
+| **Evidence ref** | WP-LOG-04 |
+
+<sub>iso27001: `A.8.17`</sub>
+
+## 5. Corrective Action Plan
+
+| Ref | Severity | Agreed action | Owner | Target date |
+|---|---|---|---|---|
+| **BCP-02** | critical | Perform a full restore test of the EHR and PACS to an isolated environment within 60 days, measure actual recovery time against RTO, and repeat at least annually. Report the result to the board. | Infrastructure Manager | 2026-08-04 |
+| **CHG-03** | critical | Implement pseudonymisation on refresh to non-production, or restrict UAT access to the same population as production pending that capability. Document and approve the process through the DPO. | EHR System Owner / DPO | 2026-08-04 |
+| **IAM-01** | critical | Automate leaver de-provisioning from the HR system to Active Directory. As an interim control, implement a monthly reconciliation of the HR leaver report against enabled accounts, with exceptions reported to the IG committee. Investigate the two post-termination logons as potential incidents. | Head of IT Operations / HR Director | 2026-08-04 |
+| **LOG-02** | critical | Assign ownership of clinical audit review to the IG team. Implement monthly proactive audit covering self, same-surname and VIP access, with exceptions investigated under the disciplinary process. Review the 3 instances identified during fieldwork. | Head of Information Governance | 2026-08-27 |
+| **VUL-02** | critical | Define and approve an emergency patching procedure for actively exploited vulnerabilities with a 72-hour target. Remediate the three internet-facing systems immediately. Report SLA compliance monthly to the IG committee. | Head of IT Operations | 2026-08-04 |
+| **VUL-03** | critical | Produce a dated decommissioning plan for all end-of-life hosts. Where migration cannot complete within 90 days, isolate the hosts to a restricted VLAN with explicit allow rules and obtain formal risk acceptance from the SIRO. | IT Director | 2026-08-27 |
+| **END-04** | high | Include IT security sign-off as a mandatory step in medical device procurement. Reconcile the inventory to discovery quarterly. Change default credentials on the devices identified and obtain manufacturer patch positions for unsupported devices. | Head of Medical Physics / IT Security Manager | 2026-09-26 |
+| **IAM-02** | high | Reduce privileged accounts to named individuals with a documented justification, disable dormant accounts, and place remaining service accounts under managed vault credentials. Reinstate quarterly review with a named deputy reviewer. | Infrastructure Manager | 2026-08-27 |
+| **NET-02** | high | Apply default-deny inter-VLAN policy with explicit allow rules for clinically required flows. Re-test segmentation after change and at least annually. Refresh the network diagram and place it under change control. | Network Manager | 2026-08-27 |
+| **RSK-02** | high | Make DPIA completion and DPO sign-off a mandatory stage gate in the project and procurement lifecycle, with the CAB unable to approve go-live without it. | Data Protection Officer | 2026-09-26 |
+| **TPR-03** | high | Apply a supplier access standard: MFA mandatory, accounts disabled by default and enabled per approved session, maximum 12-month expiry, quarterly review by the contract owner. | Head of IT Operations | 2026-08-27 |
+| **AWR-01** | medium | Escalate non-completion to line managers at 30 days and to executive leads at 60 days. Link completion to the appraisal process. Report completion rates by staff group monthly to the IG committee. | Head of Information Governance / L&D | 2026-09-26 |
+| **DPR-03** | medium | Introduce automated escalation at day 21, cross-train a second officer, and report open SAR aging to the IG committee monthly. | Head of Information Governance | 2026-09-26 |
+| **IRM-01** | medium | Run a ransomware tabletop covering clinical downtime and board communications within 90 days, involving clinical leadership. Close the four outstanding actions and schedule exercising annually in the assurance calendar. | IT Security Manager | 2026-09-26 |
+| **ISG-04** | medium | Move the register to the endpoint management platform as the source of truth, with monthly automated reconciliation against discovery and exception reporting. | IT Asset Manager | 2026-09-26 |
+| **PHY-01** | medium | Remove the 5 invalid holders immediately. Bring comms room access into the six-monthly access review cycle and the leaver checklist. | Facilities Manager / Infrastructure Manager | 2026-08-27 |
+| **TPR-01** | medium | Execute data processing agreements with both suppliers or cease the processing. Reassign ownership of the prior-year action and report closure to the audit committee. | Head of Procurement / DPO | 2026-06-17 ⚠ |
+| **LOG-04** | low | Add NTP source to the network device build standard and correct the two appliances. | Network Manager | 2026-10-26 |
+
+## Appendix A – Detailed Control Test Log
+
+| Ref | Control | Control severity | Result | Evidence ref |
+|---|---|---|---|---|
+| | **ISG – Information Security Governance & Policy** | | | |
+| ISG-01 | Board-level accountability for data security | high | Compliant | WP-ISG-01 |
+| ISG-02 | Information security policy suite approved and current | medium | Compliant | WP-ISG-02 |
+| ISG-03 | Policy communication and staff acknowledgement | medium | Compliant | WP-ISG-03 |
+| ISG-04 | Asset inventory completeness | high | Partially compliant | WP-ISG-04 |
+| | **RSK – Risk Management & Compliance Assurance** | | | |
+| RSK-01 | Information risk register maintained | high | Compliant | WP-RSK-01 |
+| RSK-02 | DPIAs completed for high-risk processing | critical | Partially compliant | WP-RSK-02 |
+| RSK-03 | Independent security testing performed | high | Compliant | WP-RSK-03 |
+| RSK-04 | Certification and regulatory submissions current | medium | Not applicable | WP-RSK-04 |
+| | **IAM – Identity & Access Management** | | | |
+| IAM-01 | Joiners, movers, leavers process effectiveness | critical | Non-compliant | WP-IAM-01 |
+| IAM-02 | Privileged account governance | critical | Partially compliant | WP-IAM-02 |
+| IAM-03 | Multi-factor authentication coverage | critical | Compliant | WP-IAM-03 |
+| IAM-04 | Periodic user access recertification | high | Compliant | WP-IAM-04 |
+| IAM-05 | Shared and generic account control | high | Compliant | WP-IAM-05 |
+| | **DPR – Data Protection & Privacy** | | | |
+| DPR-01 | Record of Processing Activities (ROPA) accuracy | high | Compliant | WP-DPR-01 |
+| DPR-02 | Data retention and secure disposal | medium | Compliant | WP-DPR-02 |
+| DPR-03 | Data subject rights fulfilment within statutory timescales | high | Partially compliant | WP-DPR-03 |
+| DPR-04 | International transfers safeguarded | high | Compliant | WP-DPR-04 |
+| | **NET – Network & Infrastructure Security** | | | |
+| NET-01 | Firewall rule base governance | high | Compliant | WP-NET-01 |
+| NET-02 | Network segmentation of clinical and medical device VLANs | critical | Partially compliant | WP-NET-02 |
+| NET-03 | Remote access security | critical | Compliant | WP-NET-03 |
+| NET-04 | Encryption of data in transit | high | Compliant | WP-NET-04 |
+| | **END – Endpoint, Mobile & Connected Medical Device Security** | | | |
+| END-01 | Full-disk encryption on all endpoints | critical | Compliant | WP-END-01 |
+| END-02 | Endpoint detection and response coverage | critical | Compliant | WP-END-02 |
+| END-03 | Mobile device management for clinical mobile use | high | Compliant | WP-END-03 |
+| END-04 | Connected medical device (IoMT) risk control | critical | Partially compliant | WP-END-04 |
+| END-05 | Removable media control | medium | Compliant | WP-END-05 |
+| | **VUL – Vulnerability & Patch Management** | | | |
+| VUL-01 | Authenticated vulnerability scanning cadence | high | Compliant | WP-VUL-01 |
+| VUL-02 | Patch deployment within defined SLA | critical | Non-compliant | WP-VUL-02 |
+| VUL-03 | Unsupported / end-of-life systems | critical | Non-compliant | WP-VUL-03 |
+| VUL-04 | Secure baseline configuration | medium | Compliant | WP-VUL-04 |
+| | **CHG – Change & Development Management** | | | |
+| CHG-01 | Change authorisation and clinical safety sign-off | high | Compliant | WP-CHG-01 |
+| CHG-02 | Segregation of development, test and production | high | Compliant | WP-CHG-02 |
+| CHG-03 | Use of live patient data in non-production | critical | Non-compliant | WP-CHG-03 |
+| CHG-04 | Emergency change control | medium | Compliant | WP-CHG-04 |
+| | **LOG – Logging, Monitoring & Detection** | | | |
+| LOG-01 | Centralised log collection and retention | high | Compliant | WP-LOG-01 |
+| LOG-02 | Clinical record access auditing | critical | Non-compliant | WP-LOG-02 |
+| LOG-03 | Alert triage and response coverage | high | Compliant | WP-LOG-03 |
+| LOG-04 | Time synchronisation | low | Partially compliant | WP-LOG-04 |
+| | **BCP – Backup, Resilience & Disaster Recovery** | | | |
+| BCP-01 | Backup coverage and immutability | critical | Compliant | WP-BCP-01 |
+| BCP-02 | Restore testing performed and evidenced | critical | Non-compliant | WP-BCP-02 |
+| BCP-03 | Business continuity plan for IT outage | high | Compliant | WP-BCP-03 |
+| BCP-04 | Single points of failure identified | medium | Compliant | WP-BCP-04 |
+| | **TPR – Third Party & Supplier Assurance** | | | |
+| TPR-01 | Data processing agreements in place | high | Partially compliant | WP-TPR-01 |
+| TPR-02 | Supplier security due diligence and ongoing monitoring | high | Compliant | WP-TPR-02 |
+| TPR-03 | Third-party remote access control | critical | Partially compliant | WP-TPR-03 |
+| TPR-04 | Exit and data return / deletion provisions | medium | Compliant | WP-TPR-04 |
+| | **IRM – Incident Response & Breach Notification** | | | |
+| IRM-01 | Incident response plan tested | high | Partially compliant | WP-IRM-01 |
+| IRM-02 | Breach notification within 72 hours | critical | Compliant | WP-IRM-02 |
+| IRM-03 | Incident logging and root cause analysis | medium | Compliant | WP-IRM-03 |
+| IRM-04 | Forensic readiness and evidence handling | low | Not yet tested |  |
+| | **PHY – Physical & Environmental Security** | | | |
+| PHY-01 | Data centre / comms room access control | high | Partially compliant | WP-PHY-01 |
+| PHY-02 | Clear screen and unattended workstation controls | medium | Compliant | WP-PHY-02 |
+| PHY-03 | Secure disposal of IT assets | high | Compliant | WP-PHY-03 |
+| PHY-04 | Environmental controls in technical areas | medium | Compliant | WP-PHY-04 |
+| | **AWR – People, Training & Security Culture** | | | |
+| AWR-01 | Annual data security training completion | high | Partially compliant | WP-AWR-01 |
+| AWR-02 | Pre-employment screening | high | Compliant | WP-AWR-02 |
+| AWR-03 | Phishing simulation programme | medium | Compliant | WP-AWR-03 |
+| AWR-04 | Confidentiality obligations and disciplinary process | low | Compliant | WP-AWR-04 |
+
+---
+
+<sub>Prepared by A. Tony, Lead IT Auditor · Northgate Health Group · Report reference ITA-202607-BE6B. This report is issued for the internal use of management and the audit committee. It reflects the control environment observed during the audit period and does not constitute a guarantee that all weaknesses have been identified.</sub>
