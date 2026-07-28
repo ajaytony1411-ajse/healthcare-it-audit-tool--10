@@ -68,10 +68,23 @@ python audit.py status audit_ITA-202607-A1B2.json
 python audit.py report audit_ITA-202607-A1B2.json
 ```
 
-Produces a self-contained HTML report (print or save to PDF from the browser — it flattens
-to a light, ink-friendly layout when printed) plus a CSV action plan for import into a GRC
-platform or issue tracker. Add `--markdown` for a Markdown copy as well, which is handy for
-pasting into a ticket, a wiki or a pull request.
+### Downloading the report
+
+An audit report is a document, so every report carries a **Download PDF** button in the top
+corner. It opens the browser's print dialog — choose *Save as PDF* as the destination. The
+stylesheet flattens the report to a light, ink-friendly layout for print and hides the
+download bar, so the PDF looks like a report rather than a screenshot of a web page.
+
+Alongside the HTML, `report` always writes a CSV action plan for import into a GRC platform
+or issue tracker. Two optional formats:
+
+```bash
+python audit.py report audit_ITA-202607-A1B2.json --markdown --docx
+```
+
+`--markdown` for pasting into a ticket or wiki; `--docx` for a Word copy, which is useful
+during the clearance cycle when management types its responses into the findings tables.
+The Word export is written directly as OOXML, so the tool still has no dependencies.
 
 To tile a diagonal watermark across the report — useful for circulating drafts, or for
 marking a specimen as yours:

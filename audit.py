@@ -17,7 +17,7 @@ from datetime import date
 from pathlib import Path
 
 from engine import Audit, STATUSES, DOWNGRADE
-from report import render_html, render_markdown, export_capa_csv
+from report import render_html, render_markdown, render_docx, export_capa_csv
 
 if hasattr(sys.stdout, "reconfigure"):          # keep box drawing readable on Windows
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -204,11 +204,15 @@ def cmd_report(args):
     if args.watermark:
         audit.watermark = args.watermark
     stem = args.out or f"{audit.audit_ref}_report"
-    html_path = render_html(audit, Path(f"{stem}.html"))
+    docx_path = render_docx(audit, Path(f"{stem}.docx")) if args.docx else None
+    html_path = render_html(audit, Path(f"{stem}.html"),
+                            docx_href=docx_path.name if docx_path else None)
     csv_path = export_capa_csv(audit, Path(f"{stem}_action_plan.csv"))
     _print_status(audit)
     print(f"\nReport      : {html_path.resolve()}")
     print(f"Action plan : {csv_path.resolve()}")
+    if docx_path:
+        print(f"Word        : {docx_path.resolve()}")
     if args.markdown:
         md_path = render_markdown(audit, Path(f"{stem}.md"))
         print(f"Markdown    : {md_path.resolve()}")
@@ -270,6 +274,8 @@ def main():
     r.add_argument("--report-date")
     r.add_argument("--markdown", action="store_true",
                    help="also write a Markdown copy of the report")
+    r.add_argument("--docx", action="store_true",
+                   help="also write a Word copy, for the management clearance cycle")
     r.add_argument("--watermark", metavar="TEXT",
                    help='tile TEXT diagonally across the report, e.g. "DRAFT" or your name')
     r.add_argument("--no-open", action="store_true")

@@ -98,6 +98,19 @@ letter-spacing:.16em;color:var(--muted);margin-bottom:6px}
 .card .v{font-family:var(--mono);font-size:30px;font-weight:700;line-height:1.1;
 color:var(--cy);text-shadow:0 0 22px rgba(63,208,245,.5);margin-bottom:6px}
 
+/* --- download bar (screen only) ------------------------------------ */
+.dl{position:fixed;top:14px;right:16px;z-index:70;display:flex;gap:8px}
+.dl button,.dl a{display:inline-flex;align-items:center;gap:7px;cursor:pointer;
+font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.12em;
+text-transform:uppercase;text-decoration:none;padding:9px 14px;
+color:var(--cy);background:rgba(8,22,38,.94);border:1px solid var(--cy-dim);
+backdrop-filter:blur(4px)}
+.dl button:hover,.dl a:hover{background:var(--cy);color:#04080f;border-color:var(--cy);
+box-shadow:0 0 18px rgba(63,208,245,.45)}
+.dl button:focus-visible,.dl a:focus-visible{outline:2px solid var(--cy);outline-offset:2px}
+@media (max-width:960px){.dl{position:static;margin:0 0 14px;justify-content:flex-start;
+flex-wrap:wrap}}
+
 .notice{margin:22px 0 4px;padding:13px 18px;background:rgba(247,178,59,.09);
 border:1px dashed rgba(247,178,59,.55);color:var(--part);font-size:13px;line-height:1.55}
 .opinion{position:relative;background:var(--panel-2);border:1px solid var(--cy-dim);
@@ -180,7 +193,7 @@ font-size:11.5px;color:var(--muted);line-height:1.7}
   h1,.card .v,.finding .hd b{color:#16202b;text-shadow:none}
   h2,h3,.finding dt,.map code,.opinion b{color:#1f3a5f}
   .card,.opinion,.finding,.tw,th{background:#f6f8fa}
-  .card::before,.card::after{display:none}
+  .card::before,.card::after,.dl{display:none}
   th,td,.tw,.card,.finding,.opinion,h2{border-color:#c9d3de}
   .bar i{box-shadow:none}
   .tw{overflow:visible}table{min-width:0}
@@ -232,7 +245,7 @@ def _mappings(check) -> str:
     return " &nbsp;|&nbsp; ".join(parts)
 
 
-def render_html(audit: Audit, out_path: str | Path) -> Path:
+def render_html(audit: Audit, out_path: str | Path, docx_href: str | None = None) -> Path:
     o = audit.overall()
     fw = audit.framework
     findings = audit.findings()
@@ -261,6 +274,12 @@ def render_html(audit: Audit, out_path: str | Path) -> Path:
 </head>
 <body>
 {'<div class="wm" aria-hidden="true"></div>' if audit.watermark else ''}
+<div class="dl">
+  <button type="button" onclick="window.print()"
+          title="Opens your print dialog — choose 'Save as PDF' as the destination">
+    &#10515; Download PDF</button>
+  {f'<a href="{e(docx_href)}" download>&#10515; Word</a>' if docx_href else ''}
+</div>
 <div class="page">""")
 
     # --- masthead -------------------------------------------------
@@ -581,6 +600,163 @@ def render_markdown(audit: Audit, out_path: str | Path) -> Path:
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text("\n".join(m), encoding="utf-8")
     return out_path
+
+
+SEV_COLOUR = {"critical": "8E1B10", "high": "C0392B", "medium": "B8770A", "low": "5C6B7A"}
+STATUS_COLOUR = {"compliant": "1F8A4C", "partial": "B8770A", "non_compliant": "C0392B",
+                 "not_applicable": "5C6B7A", "not_tested": "5C6B7A"}
+
+
+def render_docx(audit: Audit, out_path: str | Path) -> Path:
+    """The report as a Word document — the format an audit is actually circulated in.
+
+    Word matters for the clearance cycle: management types its responses into the
+    findings tables before the report is finalised and issued as PDF.
+    """
+    from docx_writer import Docx
+
+    o = audit.overall()
+    fw = audit.framework
+    findings = audit.findings()
+    overdue_ids = {r["check"]["id"] for r in audit.overdue_actions()}
+    report_date = audit.report_date or date.today().isoformat()
+    score = f"{o['score']}%" if o["score"] is not None else "n/a"
+
+    d = Docx()
+    d.para("INTERNAL AUDIT REPORT · CONFIDENTIAL",
+           space_after=60).para("", space_after=0)
+    d.title(f"IT & Information Security Audit — {audit.entity}")
+    d.subtitle(f"{fw['framework_name']} v{fw['version']} · Reference {audit.audit_ref}")
+
+    if audit.notice:
+        d.para([(audit.notice, {"bold": True, "colour": "B8770A"})], space_after=240)
+
+    d.table([["Auditee / site", audit.site],
+             ["Report date", report_date],
+             ["Lead auditor", audit.lead_auditor],
+             ["Audit period", f"{audit.period_start} to {audit.period_end}"],
+             ["Controls in programme", str(o["total"])],
+             ["Controls tested", str(o["tested"])]],
+            widths=[3000, 6638], header=False, shade_first_col=True)
+
+    # --- 1. executive summary ---
+    c = o["counts"]
+    sev = o["findings_by_severity"]
+    d.heading("1. Executive Summary", 1)
+    d.table([["Compliance score", "Findings raised", "Critical / High", "Risk exposure"],
+             [f"{score} ({o['rating']})",
+              f"{len(findings)} ({c['non_compliant']} failed, {c['partial']} partial)",
+              f"{sev['critical']} / {sev['high']}", f"{o['risk']} weighted"]],
+            widths=[2400, 2800, 2200, 2238])
+    d.para([("Audit opinion. ", {"bold": True}), (o["opinion"], {})], space_after=200)
+
+    if findings:
+        d.heading("Key matters for management attention", 3)
+        d.bullets([f"{r['check']['id']} — {r['check']['title']}. {r['result'].observation}"
+                   for r in findings[:5]])
+
+    # --- 2. scope ---
+    d.heading("2. Scope, Objective & Methodology", 1)
+    d.para(fw.get("scope_statement", ""))
+    if audit.scope_notes:
+        d.para(audit.scope_notes)
+    d.para("Testing was performed through enquiry of responsible officers, observation of "
+           "processes in operation, inspection of system configuration and documentary "
+           "evidence, and re-performance of selected control activities on a sample basis. "
+           "Controls were assessed against:")
+    d.bullets(fw.get("primary_frameworks", []))
+    d.para("Each control is rated Compliant, Partially compliant, Non-compliant or Not "
+           "applicable. The compliance score is (compliant + 0.5 × partial) ÷ controls "
+           "assessed. Findings take the severity of the underlying control where it was "
+           "absent, and one level below where the control exists but operates with gaps. "
+           "Remediation deadlines follow finding severity: "
+           + ", ".join(f"{k} {v} days" for k, v in fw.get("severity_sla_days", {}).items())
+           + ".")
+
+    # --- 3. domain results ---
+    d.heading("3. Results by Control Domain", 1)
+    rows = [["Ref", "Control domain", "Tested", "Pass", "Part", "Fail", "Score", "Assurance"]]
+    for section in fw["sections"]:
+        s = audit.section_stats(section)
+        rows.append([s["id"], s["title"], f"{s['assessed']}/{s['total']}",
+                     str(s["counts"]["compliant"]), str(s["counts"]["partial"]),
+                     str(s["counts"]["non_compliant"]),
+                     f"{s['score']}%" if s["score"] is not None else "–", s["rating"]])
+    d.table(rows, widths=[600, 2900, 800, 620, 620, 620, 780, 1698])
+
+    # --- 4. findings ---
+    d.page_break()
+    d.heading("4. Findings & Recommendations", 1)
+    if not findings:
+        d.para("No exceptions were identified in the controls tested.")
+    for i, row in enumerate(findings, 1):
+        check, res, section = row["check"], row["result"], row["section"]
+        d.heading(f"Finding {i:02d} · {check['id']} — {check['title']}", 2)
+        d.para([(row["severity"].upper(), {"bold": True, "colour": SEV_COLOUR[row["severity"]]}),
+                ("  ·  ", {}),
+                (STATUSES[res.status], {"bold": True, "colour": STATUS_COLOUR[res.status]}),
+                ("  ·  ", {}), (f"{section['id']} – {section['title']}", {})],
+               space_after=100)
+
+        due = res.due_date + (" — OVERDUE" if check["id"] in overdue_ids else "")
+        detail = [("Control objective", check["control_objective"]),
+                  ("Test performed", check["test_procedure"]),
+                  ("Sample", res.sample_size), ("Observation", res.observation),
+                  ("Root cause", res.root_cause), ("Risk / impact", res.risk_statement),
+                  ("Recommendation", res.corrective_action),
+                  ("Management response", res.management_response),
+                  ("Owner", res.action_owner), ("Target date", due),
+                  ("Evidence ref", res.evidence_ref)]
+        body = []
+        for label, value in detail:
+            if str(value or "").strip():
+                colour = "C0392B" if label == "Target date" and check["id"] in overdue_ids else None
+                body.append([label, [(value, {"colour": colour} if colour else {})]])
+        d.table(body, widths=[2200, 7438], header=False, shade_first_col=True)
+
+        maps = " · ".join(f"{k}: {v}" for k, v in check.get("mappings", {}).items() if v)
+        if maps:
+            d.para(maps, "Caption")
+
+    # --- 5. action plan ---
+    d.page_break()
+    d.heading("5. Corrective Action Plan", 1)
+    if findings:
+        rows = [["Ref", "Severity", "Agreed action", "Owner", "Target date"]]
+        for row in findings:
+            check, res = row["check"], row["result"]
+            rows.append([check["id"], row["severity"], res.corrective_action,
+                         res.action_owner,
+                         res.due_date + (" (overdue)" if check["id"] in overdue_ids else "")])
+        d.table(rows, widths=[900, 1100, 4400, 1900, 1338])
+    else:
+        d.para("No corrective actions arising.")
+
+    # --- appendix ---
+    d.page_break()
+    d.heading("Appendix A – Detailed Control Test Log", 1)
+    rows = [["Ref", "Control", "Severity", "Result", "Evidence ref"]]
+    for section in fw["sections"]:
+        rows.append(["", f"{section['id']} – {section['title']}", "", "", ""])
+        for check in section["checks"]:
+            res = audit.results.get(check["id"])
+            status = res.status if res else "not_tested"
+            rows.append([check["id"], check["title"], check.get("severity", "medium"),
+                         [(STATUSES[status], {"colour": STATUS_COLOUR[status]})],
+                         res.evidence_ref if res else ""])
+    d.table(rows, widths=[1000, 4100, 1100, 1900, 1538])
+
+    d.para("", space_after=200)
+    d.para(f"Prepared by {audit.lead_auditor} · {audit.entity} · Report reference "
+           f"{audit.audit_ref}. This report is issued for the internal use of management and "
+           "the audit committee. It reflects the control environment observed during the audit "
+           "period and does not constitute a guarantee that all weaknesses have been "
+           "identified. Distribution outside the organisation requires the approval of the "
+           "Senior Information Risk Owner.", "Caption")
+    d.para(f"Generated with the {TOOL_NAME} · {TOOL_URL} · "
+           f"© {date.today():%Y} {TOOL_AUTHOR} · MIT licence.", "Caption")
+
+    return d.save(out_path)
 
 
 def export_capa_csv(audit: Audit, out_path: str | Path) -> Path:
