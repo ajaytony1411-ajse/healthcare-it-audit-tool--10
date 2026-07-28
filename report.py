@@ -6,8 +6,15 @@ import csv
 import html
 from datetime import date
 from pathlib import Path
+from urllib.parse import quote
 
 from engine import Audit, STATUSES
+
+# Attribution carried in the footer of every report. The MIT licence makes retaining
+# this a condition of reuse; edit it if you fork the tool for your own organisation.
+TOOL_NAME = "Healthcare IT Audit Tool"
+TOOL_URL = "https://github.com/ajaytony1411-ajse/healthcare-it-audit-tool--10"
+TOOL_AUTHOR = "Ajay Tony"
 
 RATING_CLASS = {
     "Substantial": "r-sub",
@@ -194,6 +201,29 @@ def _bar(score):
             f'<span class="sub">{score}%</span>')
 
 
+def _watermark_css(text: str) -> str:
+    """A tiled, rotated text layer drawn over the page but under the pointer.
+
+    Built as an inline SVG data URI so it stays inside the single self-contained
+    file, tiles cleanly at any page length, and survives printing.
+    """
+    label = html.escape(text, quote=False)
+    svg = (
+        '<svg xmlns="http://www.w3.org/2000/svg" width="460" height="300">'
+        '<text x="230" y="150" text-anchor="middle" transform="rotate(-32 230 150)" '
+        'font-family="monospace" font-size="21" font-weight="700" letter-spacing="4" '
+        f'fill="%COLOUR%">{label}</text></svg>'
+    )
+    light = quote(svg.replace("%COLOUR%", "#3fd0f5"), safe="")
+    dark = quote(svg.replace("%COLOUR%", "#1f3a5f"), safe="")
+    return f"""
+.wm{{position:fixed;inset:0;z-index:60;pointer-events:none;opacity:.085;
+background-image:url("data:image/svg+xml,{light}")}}
+@media print{{.wm{{position:absolute;opacity:.12;
+background-image:url("data:image/svg+xml,{dark}")}}}}
+"""
+
+
 def _mappings(check) -> str:
     maps = check.get("mappings", {})
     labels = {"iso27001": "ISO 27001", "dspt": "DSPT", "cyber_essentials": "Cyber Essentials",
@@ -227,9 +257,10 @@ def render_html(audit: Audit, out_path: str | Path) -> Path:
 <meta property="og:title" content="{e(title)}">
 <meta property="og:description" content="{e(summary)}">
 <meta property="og:type" content="article">
-<style>{CSS}</style>
+<style>{CSS}{_watermark_css(audit.watermark) if audit.watermark else ''}</style>
 </head>
 <body>
+{'<div class="wm" aria-hidden="true"></div>' if audit.watermark else ''}
 <div class="page">""")
 
     # --- masthead -------------------------------------------------
@@ -398,6 +429,9 @@ This report is issued for the internal use of management and the audit committee
 control environment observed during the audit period and does not constitute a guarantee that all
 weaknesses have been identified. Distribution outside the organisation requires the approval of the
 Senior Information Risk Owner.
+<br><br>
+Generated with the <a href="{TOOL_URL}">{e(TOOL_NAME)}</a> &middot;
+&copy; {date.today():%Y} {e(TOOL_AUTHOR)} &middot; MIT licence.
 </div></div>
 </body>
 </html>""")
@@ -540,6 +574,8 @@ def render_markdown(audit: Audit, out_path: str | Path) -> Path:
              "management and the audit committee. It reflects the control environment observed "
              "during the audit period and does not constitute a guarantee that all weaknesses "
              "have been identified.</sub>\n")
+    m.append(f"<sub>Generated with the [{TOOL_NAME}]({TOOL_URL}) · "
+             f"© {date.today():%Y} {TOOL_AUTHOR} · MIT licence.</sub>\n")
 
     out_path = Path(out_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)

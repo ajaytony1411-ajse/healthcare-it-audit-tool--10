@@ -201,6 +201,8 @@ def cmd_report(args):
     audit = Audit.load(args.audit)
     if args.report_date:
         audit.report_date = args.report_date
+    if args.watermark:
+        audit.watermark = args.watermark
     stem = args.out or f"{audit.audit_ref}_report"
     html_path = render_html(audit, Path(f"{stem}.html"))
     csv_path = export_capa_csv(audit, Path(f"{stem}_action_plan.csv"))
@@ -268,6 +270,8 @@ def main():
     r.add_argument("--report-date")
     r.add_argument("--markdown", action="store_true",
                    help="also write a Markdown copy of the report")
+    r.add_argument("--watermark", metavar="TEXT",
+                   help='tile TEXT diagonally across the report, e.g. "DRAFT" or your name')
     r.add_argument("--no-open", action="store_true")
     r.set_defaults(func=cmd_report)
 

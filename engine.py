@@ -70,6 +70,7 @@ class Audit:
     report_date: str = ""
     scope_notes: str = ""
     notice: str = ""      # banner shown at the head of the report, e.g. a demo disclaimer
+    watermark: str = ""   # diagonal tiled text across the report; blank for none
     results: dict = field(default_factory=dict)   # check_id -> Result
 
     # ---------- construction / persistence ----------

@@ -73,6 +73,16 @@ to a light, ink-friendly layout when printed) plus a CSV action plan for import 
 platform or issue tracker. Add `--markdown` for a Markdown copy as well, which is handy for
 pasting into a ticket, a wiki or a pull request.
 
+To tile a diagonal watermark across the report — useful for circulating drafts, or for
+marking a specimen as yours:
+
+```bash
+python audit.py report audit_ITA-202607-A1B2.json --watermark "DRAFT - NOT FOR CIRCULATION"
+```
+
+Off by default, so issued client reports stay clean. Every report carries a tool attribution
+line in the footer regardless; retaining it is a condition of the MIT licence.
+
 ## How it scores
 
 **Compliance score** = (compliant + 0.5 × partial) ÷ controls assessed. Controls marked
