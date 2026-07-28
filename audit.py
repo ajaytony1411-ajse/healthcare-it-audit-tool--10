@@ -225,13 +225,16 @@ def cmd_demo(args):
     audit.save(work)
     html_path = render_html(audit, work.with_name(f"{work.stem}_report.html"))
     csv_path = export_capa_csv(audit, work.with_name(f"{work.stem}_action_plan.csv"))
-    # Markdown copy lives in docs/ so it renders directly on GitHub.
+    # docs/ is what GitHub serves: the Markdown copy renders in the repo browser,
+    # and index.html is published as the live site by GitHub Pages.
     md_path = render_markdown(audit, HERE / "docs" / "EXAMPLE_REPORT.md")
+    site_path = render_html(audit, HERE / "docs" / "index.html")
     _print_status(audit)
     print(f"\nWorking file : {work.resolve()}")
     print(f"Report       : {html_path.resolve()}")
     print(f"Action plan  : {csv_path.resolve()}")
     print(f"Markdown     : {md_path.resolve()}")
+    print(f"Pages site   : {site_path.resolve()}")
     if not args.no_open:
         webbrowser.open(html_path.resolve().as_uri())
 

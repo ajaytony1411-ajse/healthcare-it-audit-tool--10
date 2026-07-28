@@ -11,7 +11,10 @@ traced straight back to the clause it breaches.
 
 No dependencies — Python 3.10+ standard library only.
 
-### 📄 [Read the worked example report →](docs/EXAMPLE_REPORT.md)
+### 🔗 [View the live example report →](https://ajaytony1411-ajse.github.io/healthcare-it-audit-tool--10/)
+
+The full styled report as the tool produces it. Same thing as
+[Markdown](docs/EXAMPLE_REPORT.md) if you'd rather stay in the repo.
 
 A complete engagement against a fictional auditee: 58 controls tested, 18 findings, scored
 by domain, with a full corrective action plan. That is the tool's actual output, not a mockup.

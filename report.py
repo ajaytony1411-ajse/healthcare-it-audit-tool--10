@@ -91,6 +91,8 @@ letter-spacing:.16em;color:var(--muted);margin-bottom:6px}
 .card .v{font-family:var(--mono);font-size:30px;font-weight:700;line-height:1.1;
 color:var(--cy);text-shadow:0 0 22px rgba(63,208,245,.5);margin-bottom:6px}
 
+.notice{margin:22px 0 4px;padding:13px 18px;background:rgba(247,178,59,.09);
+border:1px dashed rgba(247,178,59,.55);color:var(--part);font-size:13px;line-height:1.55}
 .opinion{position:relative;background:var(--panel-2);border:1px solid var(--cy-dim);
 border-left:3px solid var(--cy);padding:16px 20px;margin:18px 0}
 .opinion b{color:var(--cy);font-family:var(--mono);text-transform:uppercase;
@@ -207,8 +209,28 @@ def render_html(audit: Audit, out_path: str | Path) -> Path:
     overdue_ids = {r["check"]["id"] for r in audit.overdue_actions()}
     report_date = audit.report_date or date.today().isoformat()
 
+    title = f"IT & Information Security Audit — {audit.entity}"
+    summary = (f"{fw['framework_name']} · {audit.audit_ref} · "
+               f"{o['total']} controls, {len(findings)} findings, "
+               f"{o['score'] if o['score'] is not None else '—'}% compliance "
+               f"({o['rating']} assurance).")
+
     p: list[str] = []
-    p.append(f"<style>{CSS}</style><div class='page'>")
+    p.append(f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>{e(title)}</title>
+<meta name="description" content="{e(summary)}">
+<meta property="og:title" content="{e(title)}">
+<meta property="og:description" content="{e(summary)}">
+<meta property="og:type" content="article">
+<style>{CSS}</style>
+</head>
+<body>
+<div class="page">""")
 
     # --- masthead -------------------------------------------------
     p.append(f"""
@@ -226,6 +248,9 @@ def render_html(audit: Audit, out_path: str | Path) -> Path:
   <div><span>Controls in programme</span><span>{o['total']}</span></div>
   <div><span>Controls tested</span><span>{o['tested']}</span></div>
 </div>""")
+
+    if audit.notice:
+        p.append(f'<div class="notice">{e(audit.notice)}</div>')
 
     # --- executive summary ---------------------------------------
     counts = o["counts"]
@@ -373,7 +398,9 @@ This report is issued for the internal use of management and the audit committee
 control environment observed during the audit period and does not constitute a guarantee that all
 weaknesses have been identified. Distribution outside the organisation requires the approval of the
 Senior Information Risk Owner.
-</div></div>""")
+</div></div>
+</body>
+</html>""")
 
     out_path = Path(out_path)
     out_path.write_text("\n".join(p), encoding="utf-8")
@@ -397,8 +424,8 @@ def render_markdown(audit: Audit, out_path: str | Path) -> Path:
     m: list[str] = []
     m.append(f"# IT & Information Security Audit — {audit.entity}\n")
     m.append(f"*{fw['framework_name']} v{fw['version']} · Reference {audit.audit_ref}*\n")
-    m.append("> **Internal audit report — confidential.** This is a worked example against a "
-             "fictional auditee, produced by [`audit.py`](../audit.py) to show the tool's output.\n")
+    if audit.notice:
+        m.append(f"> **{audit.notice}**\n")
 
     m.append("| | |\n|---|---|")
     for label, value in [("Auditee / site", audit.site), ("Report date", report_date),

@@ -69,6 +69,7 @@ class Audit:
     opened_on: str = field(default_factory=lambda: date.today().isoformat())
     report_date: str = ""
     scope_notes: str = ""
+    notice: str = ""      # banner shown at the head of the report, e.g. a demo disclaimer
     results: dict = field(default_factory=dict)   # check_id -> Result
 
     # ---------- construction / persistence ----------
